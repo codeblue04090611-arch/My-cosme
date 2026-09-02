@@ -400,11 +400,11 @@
 </head>
 <body>
 
-  <!-- 1. ログイン画面（未ログイン時に表示） -->
+  <!-- 1. ログイン画面（画像通りのレイアウト） -->
   <div id="loginScreen">
     <div class="login-box">
       <div style="font-family: 'Georgia', serif; font-style: italic; font-size: 2rem; color: #9e828d; margin-bottom: 2px;">My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="color: #f7a8c4; font-size: 1.2rem;">♥</span></div>
-      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 25px;">メールアドレスでログインして、スマホとPCでデータを同期しよう</p>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 25px;">メールアドレスでログインして、データを同期しよう</p>
       
       <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
         <div>
@@ -416,9 +416,10 @@
           <input type="password" id="loginPassword" placeholder="パスワード（6文字以上）" style="margin-top: 4px;">
         </div>
         
-        <div style="display: flex; gap: 8px; margin-top: 10px;">
-          <button onclick="handleLogin()" style="flex:1; background:linear-gradient(135deg, #f7a8c4, #e06d98); color:white; border:none; padding:12px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:0.9rem; box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3);">ログイン</button>
-          <button onclick="handleRegister()" style="flex:1; background:#fde2ec; color:#e06d98; border:1.5px solid #f5d0de; padding:12px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:0.9rem;">新規登録</button>
+        <button onclick="handleLogin()" style="width:100%; background:linear-gradient(135deg, #f7a8c4, #e06d98); color:white; border:none; padding:13px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:0.95rem; box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3); margin-top: 6px;">ログインする</button>
+        
+        <div style="text-align: center; margin-top: 10px;">
+          <a href="#" onclick="handleRegister(); return false;" style="font-size: 0.8rem; color: var(--text-sub); text-decoration: none;">アカウントをお持ちでない方（新規登録）</a>
         </div>
       </div>
     </div>
@@ -445,7 +446,7 @@
         <input type="text" id="searchInput" placeholder="ブランド名、商品名、#タグで検索..." oninput="render()">
       </div>
 
-      <!-- 商品登録フォーム（期限チェックタブでは非表示にします） -->
+      <!-- 商品登録フォーム -->
       <div class="form-card" id="formCardSection">
         <div class="form-title">新しいコスメを登録</div>
 
@@ -468,7 +469,6 @@
             <div class="select-picker-trigger" id="statusSelectTrigger" onclick="openCenterModal('status')">今使ってる</div>
           </div>
 
-          <!-- 金額入力欄（任意） -->
           <div class="form-group">
             <label>金額（円）</label>
             <input type="number" id="priceInput" placeholder="例: 1500" min="0">
@@ -482,7 +482,6 @@
             <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
           </div>
 
-          <!-- 今使ってる用の期限＆数量 -->
           <div class="form-group">
             <label>今使ってる期限</label>
             <div class="date-input-wrapper">
@@ -495,7 +494,6 @@
             <input type="number" id="usingCountInput" value="1" min="0">
           </div>
 
-          <!-- ストック用の期限＆数量 -->
           <div class="form-group">
             <label>ストックの期限</label>
             <div class="date-input-wrapper">
@@ -529,7 +527,7 @@
       <!-- アイテム一覧 -->
       <div id="itemList" class="grid"></div>
 
-      <!-- ボトムナビゲーション（今使ってる、ストック、使い切り、買うもの、欲しいもの） -->
+      <!-- ボトムナビゲーション -->
       <nav class="bottom-nav">
         <button class="nav-item active" id="nav-using" onclick="switchTab('using')">
           <span class="icon">✨</span>
@@ -565,7 +563,6 @@
         <div style="width: 40px;"></div>
       </div>
 
-      <!-- 記録フォーム -->
       <div class="form-card">
         <div class="form-title">♥ 新しい favorite log を記録</div>
         <div class="form-grid">
@@ -619,7 +616,7 @@
       <div id="routineHistoryList" style="display:flex; flex-direction:column; gap:12px;"></div>
     </div>
 
-  </div> <!-- /appRootContainer -->
+  </div>
 
   <!-- サイドメニュー -->
   <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu(event)">
@@ -694,7 +691,7 @@
     </div>
   </div>
 
-  <!-- Firebase 認証ロジック & アプリのスクリプト -->
+  <!-- Firebase 認証ロジック -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -714,19 +711,17 @@
     const loginScreen = document.getElementById('loginScreen');
     const appRootContainer = document.getElementById('appRootContainer');
 
-    // ログイン状態を監視
     onAuthStateChanged(auth, (user) => {
       if (user) {
         loginScreen.style.display = 'none';
         appRootContainer.style.display = 'block';
-        initApp(); // ログイン後にアプリを初期化
+        initApp();
       } else {
         loginScreen.style.display = 'flex';
         appRootContainer.style.display = 'none';
       }
     });
 
-    // ログイン処理
     window.handleLogin = async function() {
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
@@ -738,7 +733,6 @@
       }
     };
 
-    // 新規登録処理
     window.handleRegister = async function() {
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
@@ -750,15 +744,13 @@
       }
     };
 
-    // ログアウト処理
     window.handleLogout = async function() {
-      if (confirm('ログアウトしますか？')) {
-        await signOut(auth);
-      }
+      // 確認なしでサクッとログアウトするようにしたよ
+      await signOut(auth);
     };
   </script>
 
-  <!-- あなたのコスメ管理アプリ本体のスクリプト -->
+  <!-- アプリ本体のスクリプト -->
   <script>
     let categories = ["リップ", "アイシャドウ", "ファンデ・下地", "日焼け止め", "スキンケア", "クレンジング", "パウダー", "チーク", "その他"];
     let statuses = [
@@ -825,7 +817,6 @@
       document.getElementById('favCategoryTrigger').textContent = formFavCategory;
     }
 
-    /* ハッシュタグ予測変換用 */
     function handleTagInput(e) {
       const val = e.target.value.trim().replace(/^#/, '');
       if (val && !formTags.includes(val)) {
@@ -878,7 +869,6 @@
       });
     }
 
-    /* 使用期限判定＆日数計算 */
     function getExpireInfo(expireDateStr) {
       if (!expireDateStr) return { status: 'normal', text: '' };
       const today = new Date();
@@ -895,7 +885,6 @@
       return { status: 'normal', text: '' };
     }
 
-    /* サイドメニュー・画面切り替え */
     function openSideMenu() { document.getElementById('sideMenuOverlay').style.display = 'flex'; }
     function closeSideMenu(e) { if (e.target.id === 'sideMenuOverlay') closeSideMenuDirect(); }
     function closeSideMenuDirect() { document.getElementById('sideMenuOverlay').style.display = 'none'; }
@@ -917,7 +906,6 @@
       switchTab('expire');
     }
 
-    /* favorite log 関連処理 */
     function updateFavBrandList() {
       const dl = document.getElementById('favBrandList');
       dl.innerHTML = '';
@@ -1029,7 +1017,6 @@
       });
     }
 
-    /* 画像プレビュー */
     function previewImage(input) {
       const file = input.files[0];
       if (file) {
@@ -1052,7 +1039,6 @@
       document.getElementById('uploadPlaceholder').style.display = 'block';
     }
 
-    /* 中央モーダル */
     function openCenterModal(type) {
       currentModalType = type;
       let titleText = '選択してください';
@@ -1509,7 +1495,6 @@
       }
     }
 
-    /* 商品詳細モーダル（通常表示） */
     function openModal(id) {
       const item = items.find(i => i.id === id);
       if (!item) return;
@@ -1556,7 +1541,6 @@
         <div class="modal-detail-row"><span class="modal-label">金額:</span> ${priceText}</div>
         <div class="modal-detail-row"><span class="modal-label">ハッシュタグ:</span> ${tagsHtml}</div>
         
-        <!-- 今使ってる（個数＆期限＆＋ー） -->
         <div class="modal-detail-row" style="background:#f4fbf7; padding:8px 10px; border-radius:12px; border:1px solid #a7f3d0; margin-top:8px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
             <span class="modal-label" style="color:#10b981;">✨ 今使ってる分</span>
@@ -1569,7 +1553,6 @@
           <div style="font-size:0.8rem;">期限: ${expInfo}</div>
         </div>
 
-        <!-- 未開封ストック（個数＆期限＆＋ー） -->
         <div class="modal-detail-row" style="background:#fff5f8; padding:8px 10px; border-radius:12px; border:1px solid #fecdd3; margin-top:6px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
             <span class="modal-label" style="color:#e11d48;">📦 未開封ストック</span>
@@ -1582,7 +1565,6 @@
           <div style="font-size:0.8rem;">期限: ${stockExpInfo}</div>
         </div>
 
-        <!-- 使い切り回数（±ボタン付き） -->
         <div class="modal-detail-row" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
           <div><span class="modal-label">使い切り回数:</span> <span style="font-weight:bold; color:var(--accent);">${item.finishedCount || 0} 回</span>（${avgRatingText}）</div>
           <div style="display:flex; gap:4px;">
@@ -1603,7 +1585,6 @@
 
         ${(item.usingCount || 0) > 0 ? `<button class="btn-action" style="background:#fff1f5; color:#e11d48; border-color:#fecdd3;" onclick="openFinishRatingModal(${item.id})">🎉 1個使い切った！（評価して記録）</button>` : ''}
         
-        <!-- リスト追加・解除ボタン -->
         <div style="display:flex; gap:6px; margin-top:8px;">
           ${item.isBuy ? 
             `<button class="btn-action" style="background:#f4f4f5; color:var(--text-sub); border-color:var(--border); margin-top:0; flex:1;" onclick="toggleFlagFromModal(${item.id}, 'buy')">🛒 買うものから外す</button>` : 
@@ -1622,7 +1603,6 @@
       document.getElementById('modalOverlay').style.display = 'flex';
     }
 
-    // 編集モーダルを開く
     let editingItemTags = [];
     function openEditModal(id) {
       const item = items.find(i => i.id === id);
