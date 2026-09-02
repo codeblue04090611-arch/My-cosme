@@ -29,7 +29,6 @@
       overflow-x: hidden;
     }
 
-    /* ログイン・新規登録画面 */
     #loginScreen {
       display: flex;
       justify-content: center;
@@ -61,7 +60,6 @@
       text-align: center;
     }
 
-    /* ヘッダー */
     .app-header {
       display: flex;
       justify-content: space-between;
@@ -118,7 +116,6 @@
       50% { transform: scale(1.15); }
     }
 
-    /* 検索バー */
     .search-bar-box {
       background: var(--card-bg);
       border: 1.5px solid var(--border);
@@ -134,7 +131,6 @@
       border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: var(--text-main);
     }
 
-    /* フォームカード */
     .form-card {
       background: var(--card-bg);
       border-radius: 28px;
@@ -225,19 +221,20 @@
     .image-picker-box {
       border: 2px dashed var(--primary);
       background: var(--primary-soft);
-      border-radius: 16px;
-      padding: 6px;
+      border-radius: 14px;
+      padding: 4px;
       text-align: center;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 52px;
+      height: 45px;
       overflow: hidden;
       transition: background 0.2s;
+      width: 100%;
     }
     .image-picker-preview {
-      width: 40px; height: 40px; object-fit: cover; border-radius: 10px; display: none;
+      width: 35px; height: 35px; object-fit: cover; border-radius: 8px; display: none;
     }
 
     .btn-submit {
@@ -316,7 +313,6 @@
     .badge-expire-near { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
     .badge-expire-over { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
 
-    /* ボトムナビ */
     .bottom-nav {
       position: fixed;
       bottom: 16px; left: 16px; right: 16px;
@@ -342,7 +338,6 @@
     .nav-item span.icon { font-size: 1.15rem; }
     .nav-item.active { color: var(--accent); transform: translateY(-2px); }
 
-    /* サイドメニュー */
     .side-menu-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; z-index: 2500; justify-content: flex-start;
     }
@@ -355,7 +350,6 @@
     }
     .menu-item:hover { background: var(--primary-soft); color: var(--accent); }
 
-    /* 設定モーダル */
     .settings-modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px;
     }
@@ -363,7 +357,6 @@
       background: white; border-radius: 28px; width: 100%; max-width: 340px; padding: 24px; border: 2px solid var(--border); box-shadow: 0 20px 45px rgba(224, 109, 152, 0.2); text-align: center;
     }
 
-    /* モーダル共通 */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px;
     }
@@ -388,7 +381,6 @@
     }
     .btn-delete { background: #ffffff; color: #e11d48; border: 1.5px solid #fecdd3; padding: 11px; border-radius: 18px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 0.85rem; }
 
-    /* 中央ポップアップ */
     .center-modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px;
     }
@@ -401,7 +393,6 @@
     .drag-handle { color: var(--accent); font-weight: bold; margin-right: 10px; cursor: grab; padding: 4px; touch-action: none; }
     .sort-list-item.dragging { opacity: 0.4; }
 
-    /* 削除ダイアログ */
     .dialog-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 20px;
     }
@@ -419,7 +410,6 @@
 </head>
 <body>
 
-  <!-- 1. ログイン / 新規登録画面 -->
   <div id="loginScreen">
     <div class="login-box">
       <div id="authHeaderTitle" class="app-logo" style="justify-content: center; margin-bottom: 2px;">
@@ -450,10 +440,8 @@
     </div>
   </div>
 
-  <!-- 2. アプリ全体のラップ -->
   <div id="appRootContainer" style="display: none;">
 
-    <!-- HOME画面ビュー -->
     <div id="mainView">
       <div class="app-header">
         <div class="menu-icon-btn" onclick="openSideMenu()" title="メニュー">≡</div>
@@ -465,7 +453,6 @@
         <div class="menu-icon-btn" onclick="openSettingsModal()" title="設定" style="font-size: 1.1rem;">⚙️</div>
       </div>
 
-      <!-- 検索バー -->
       <div class="search-bar-box">
         <span>🔍</span>
         <input type="text" id="searchInput" placeholder="ブランド名、商品名、#タグで検索..." oninput="render()">
@@ -490,7 +477,7 @@
             <div class="select-picker-trigger" id="categorySelectTrigger" onclick="openCenterModal('category')">リップ</div>
           </div>
           <div class="form-group">
-            <label>登録時の状態 / リスト</label>
+            <label>状態</label>
             <div class="select-picker-trigger" id="statusSelectTrigger" onclick="openCenterModal('status')">今使ってる</div>
           </div>
 
@@ -502,33 +489,17 @@
             <label>画像</label>
             <div class="image-picker-box" onclick="document.getElementById('imageInput').click()">
               <img id="imagePreview" class="image-picker-preview" alt="">
-              <span id="uploadPlaceholder" style="font-size:1.1rem;">📷</span>
+              <span id="uploadPlaceholder" style="font-size:1rem;">📷 画像を選択</span>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
           </div>
 
-          <div class="form-group">
-            <label>今使ってる期限</label>
+          <div class="form-group full">
+            <label id="formExpireLabel">使用期限</label>
             <div class="date-input-wrapper">
               <input type="date" id="expireDate">
               <span class="calendar-icon-overlay">📅</span>
             </div>
-          </div>
-          <div class="form-group">
-            <label>今使ってる個数</label>
-            <input type="number" id="usingCountInput" value="1" min="0">
-          </div>
-
-          <div class="form-group">
-            <label>ストックの期限</label>
-            <div class="date-input-wrapper">
-              <input type="date" id="stockExpireDate">
-              <span class="calendar-icon-overlay">📅</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>ストックの個数</label>
-            <input type="number" id="stockCountInput" value="0" min="0">
           </div>
 
           <div class="form-group full">
@@ -546,13 +517,10 @@
         <button class="btn-submit" onclick="addItem()">コスメを登録・更新する</button>
       </div>
 
-      <!-- カテゴリー＆タグフィルター -->
       <div class="summary-scroll" id="summaryGrid"></div>
 
-      <!-- アイテム一覧 -->
       <div id="itemList" class="grid"></div>
 
-      <!-- ボトムナビゲーション -->
       <nav class="bottom-nav">
         <button class="nav-item active" id="nav-using" onclick="switchTab('using')">
           <span class="icon">✨</span>
@@ -577,7 +545,6 @@
       </nav>
     </div>
 
-    <!-- favorite log 画面ビュー -->
     <div id="routineView" style="display:none;">
       <div class="app-header">
         <div class="menu-icon-btn" onclick="openSideMenu()" title="メニュー">≡</div>
@@ -643,7 +610,6 @@
 
   </div>
 
-  <!-- サイドメニュー -->
   <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu(event)">
     <div class="side-menu" onclick="event.stopPropagation()">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -662,7 +628,6 @@
     </div>
   </div>
 
-  <!-- 設定モーダル -->
   <div class="settings-modal-overlay" id="settingsModalOverlay" onclick="closeSettingsModal(event)">
     <div class="settings-modal" onclick="event.stopPropagation()">
       <h3 style="color:var(--accent); font-size:1.1rem; margin-bottom:12px;">⚙️ 設定</h3>
@@ -672,7 +637,6 @@
     </div>
   </div>
 
-  <!-- ログアウト確認ダイアログ -->
   <div class="dialog-overlay" id="logoutDialogOverlay">
     <div class="dialog-box">
       <h3 style="color:var(--accent); font-size:1.05rem; margin-bottom:8px;">🚪 ログアウト</h3>
@@ -684,7 +648,6 @@
     </div>
   </div>
 
-  <!-- 各種モーダル -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
     <div class="modal" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeModalDirect()">✕</button>
@@ -735,19 +698,18 @@
     </div>
   </div>
 
-  <!-- Firebase 認証ロジック -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
-  apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
-  authDomain: "my-cosme.firebaseapp.com",
-  projectId: "my-cosme",
-  storageBucket: "my-cosme.firebasestorage.app",
-  messagingSenderId: "863803729557",
-  appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
-};
+    apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
+    authDomain: "my-cosme.firebaseapp.com",
+    projectId: "my-cosme",
+    storageBucket: "my-cosme.firebasestorage.app",
+    messagingSenderId: "863803729557",
+    appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
+  };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -873,7 +835,6 @@
     };
   </script>
 
-  <!-- アプリ本体のスクリプト -->
   <script>
     let categories = ["リップ", "アイシャドウ", "ファンデ・下地", "日焼け止め", "スキンケア", "クレンジング", "パウダー", "チーク", "その他"];
     let statuses = [
@@ -936,7 +897,16 @@
     function updateFormTriggers() {
       document.getElementById('categorySelectTrigger').textContent = formCategoryValue;
       const stObj = statuses.find(s => s.key === formStatusKey);
-      document.getElementById('statusSelectTrigger').textContent = stObj ? stObj.label : '選択';
+      const stLabel = stObj ? stObj.label : '今使ってる';
+      document.getElementById('statusSelectTrigger').textContent = stLabel;
+      
+      const expireLabel = document.getElementById('formExpireLabel');
+      if (formStatusKey === 'stock') {
+        expireLabel.textContent = 'ストックの期限';
+      } else {
+        expireLabel.textContent = '今使ってる期限';
+      }
+
       document.getElementById('favCategoryTrigger').textContent = formFavCategory;
     }
 
@@ -1221,10 +1191,8 @@
         else listContainer.insertBefore(draggingItem, item);
       });
 
-      let touchStartY = 0;
       handle.addEventListener('touchstart', (e) => {
         item.classList.add('dragging');
-        touchStartY = e.touches[0].clientY;
       }, {passive: true});
 
       handle.addEventListener('touchmove', (e) => {
@@ -1356,21 +1324,19 @@
       const status = formStatusKey;
       
       const price = parseInt(document.getElementById('priceInput').value) || 0;
-      const expireDate = document.getElementById('expireDate').value;
-      const stockExpireDate = document.getElementById('stockExpireDate').value;
-      let usingCount = parseInt(document.getElementById('usingCountInput').value) || 0;
-      let stockCount = parseInt(document.getElementById('stockCountInput').value) || 0;
+      const expireDateVal = document.getElementById('expireDate').value;
 
-      // 状態に応じた期限の振り分けロジック
       let finalExpireDate = '';
       let finalStockExpireDate = '';
+      let usingCount = 0;
+      let stockCount = 0;
+
       if (status === 'using') {
-        finalExpireDate = expireDate;
+        usingCount = 1;
+        finalExpireDate = expireDateVal;
       } else if (status === 'stock') {
-        finalStockExpireDate = stockExpireDate;
-      } else {
-        finalExpireDate = expireDate;
-        finalStockExpireDate = stockExpireDate;
+        stockCount = 1;
+        finalStockExpireDate = expireDateVal;
       }
 
       const notes = document.getElementById('notes').value.trim();
@@ -1382,16 +1348,19 @@
 
       if (existingIndex !== -1) {
         const existing = items[existingIndex];
-        existing.usingCount = (existing.usingCount || 0) + usingCount;
-        existing.stockCount = (existing.stockCount || 0) + stockCount;
+        if (status === 'using') {
+          existing.usingCount = (existing.usingCount || 0) + 1;
+          if (finalExpireDate) existing.expireDate = finalExpireDate;
+        } else if (status === 'stock') {
+          existing.stockCount = (existing.stockCount || 0) + 1;
+          if (finalStockExpireDate) existing.stockExpireDate = finalStockExpireDate;
+        }
         if (status === 'finished') existing.finishedCount = (existing.finishedCount || 0) + 1;
         if (status === 'buy') existing.isBuy = true;
         if (status === 'wishlist') existing.isWishlist = true;
 
         if (price > 0) existing.price = price;
         if (currentImageBase64) existing.img = currentImageBase64;
-        if (finalExpireDate) existing.expireDate = finalExpireDate;
-        if (finalStockExpireDate) existing.stockExpireDate = finalStockExpireDate;
         if (notes) existing.notes = notes;
         existing.category = category;
         tags.forEach(t => { if (!existing.tags.includes(t)) existing.tags.push(t); });
@@ -1430,9 +1399,6 @@
       document.getElementById('brand').value = '';
       document.getElementById('priceInput').value = '';
       document.getElementById('expireDate').value = '';
-      document.getElementById('stockExpireDate').value = '';
-      document.getElementById('usingCountInput').value = '1';
-      document.getElementById('stockCountInput').value = '0';
       document.getElementById('notes').value = '';
       document.getElementById('tagInput').value = '';
       resetImagePicker();
@@ -1641,29 +1607,22 @@
       const content = document.getElementById('modalContent');
       const imgContentHtml = item.img ? `<img src="${item.img}" class="modal-img">` : `<div style="font-size:3rem;">🎀</div>`;
 
-      let avgRatingText = '評価なし';
-      if (item.ratings && item.ratings.length > 0) {
-        const avg = (item.ratings.reduce((a,b)=>a+b,0) / item.ratings.length).toFixed(1);
-        avgRatingText = `★ ${avg} （${item.ratings.length}回）`;
-      }
-
       let tagsHtml = item.tags && item.tags.length ? item.tags.map(t => `<span class="tag" style="margin-right:4px;">#${t}</span>`).join('') : 'なし';
 
       const infoUsing = getExpireInfo(item.expireDate);
-      let expInfo = item.expireDate ? `${item.expireDate}` : '未設定';
+      let expInfo = item.expireDate ? `${item.expireDate}` : '';
       if (infoUsing.status === 'near' || infoUsing.status === 'over') {
         expInfo += ` <span style="color:${infoUsing.status==='over'?'#dc2626':'#d97706'}; font-weight:bold;">(${infoUsing.text})</span>`;
       }
 
       const infoStock = getExpireInfo(item.stockExpireDate);
-      let stockExpInfo = item.stockExpireDate ? `${item.stockExpireDate}` : '未設定';
+      let stockExpInfo = item.stockExpireDate ? `${item.stockExpireDate}` : '';
       if (infoStock.status === 'near' || infoStock.status === 'over') {
         stockExpInfo += ` <span style="color:${infoStock.status==='over'?'#dc2626':'#d97706'}; font-weight:bold;">(${infoStock.text})</span>`;
       }
 
       const priceText = (item.price !== undefined && item.price > 0) ? `¥${item.price.toLocaleString()}` : '未設定';
 
-      // 指定された構成・順番に整理：ブランド名、商品名、カテゴリー、状態、金額、使用期限、画像、ハッシュタグ、メモ
       let statusStrs = [];
       if ((item.usingCount || 0) > 0) statusStrs.push(`今使ってる (${item.usingCount}個)`);
       if ((item.stockCount || 0) > 0) statusStrs.push(`ストック (${item.stockCount}個)`);
@@ -1672,7 +1631,16 @@
       if ((item.finishedCount || 0) > 0) statusStrs.push(`使い切り (${item.finishedCount}回)`);
       const statusText = statusStrs.length > 0 ? statusStrs.join(', ') : 'なし';
 
-      const activeExpireText = (item.expireDate && (item.usingCount || 0) > 0) ? expInfo : ((item.stockExpireDate && (item.stockCount || 0) > 0) ? stockExpInfo : (item.expireDate || item.stockExpireDate || '未設定'));
+      let expireDisplay = '未設定';
+      if ((item.usingCount || 0) > 0 && item.expireDate) {
+        expireDisplay = `今使ってる期限: ${expInfo}`;
+      } else if ((item.stockCount || 0) > 0 && item.stockExpireDate) {
+        expireDisplay = `ストックの期限: ${stockExpInfo}`;
+      } else if (item.expireDate) {
+        expireDisplay = item.expireDate;
+      } else if (item.stockExpireDate) {
+        expireDisplay = item.stockExpireDate;
+      }
 
       content.innerHTML = `
         <div style="font-size:0.7rem; color:var(--text-sub); font-weight:bold; text-transform:uppercase;">${item.brand || 'No Brand'}</div>
@@ -1681,7 +1649,7 @@
         <div class="modal-detail-row"><span class="modal-label">カテゴリー:</span> ${item.category}</div>
         <div class="modal-detail-row"><span class="modal-label">状態:</span> ${statusText}</div>
         <div class="modal-detail-row"><span class="modal-label">金額:</span> ${priceText}</div>
-        <div class="modal-detail-row"><span class="modal-label">使用期限:</span> ${activeExpireText}</div>
+        <div class="modal-detail-row"><span class="modal-label">使用期限:</span> ${expireDisplay}</div>
         
         <div style="margin: 12px 0;">
           <div class="modal-label" style="margin-bottom:4px;">画像:</div>
