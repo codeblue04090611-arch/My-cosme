@@ -1,184 +1,1781 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My cosme ♥</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-box {
-            background: #ffffff;
-            padding: 40px 50px;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            width: 400px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .logo {
-            font-size: 32px;
-            font-weight: bold;
-            color: #e91e63;
-            margin-bottom: 8px;
-            font-style: italic;
-        }
-        .subtext {
-            font-size: 13px;
-            color: #888888;
-            margin-bottom: 35px;
-        }
-        .input-field {
-            width: 100%;
-            padding: 14px 18px;
-            margin-bottom: 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            box-sizing: border-box;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .input-field:focus {
-            border-color: #e91e63;
-        }
-        .btn-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .action-btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn-login {
-            background: linear-gradient(135deg, #f06292, #e91e63);
-            color: white;
-            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
-        }
-        .btn-register {
-            background: #fce4ec;
-            color: #c2185b;
-        }
-        .action-btn:hover {
-            opacity: 0.9;
-        }
-        /* ログイン成功後に切り替わるアプリ画面 */
-        #app-screen {
-            display: none;
-            width: 100%;
-            height: 100vh;
-            background: #ffffff;
-            padding: 30px;
-            box-sizing: border-box;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My cosme</title>
+  <style>
+    :root {
+      --bg-color: #fcf4f7;
+      --card-bg: #ffffff;
+      --primary: #f7a8c4;       
+      --primary-hover: #e892b3;
+      --primary-soft: #fde2ec;  
+      --accent: #e06d98;
+      --text-main: #543d46;
+      --text-sub: #9e828d;
+      --border: #f5d0de;
+      --shadow: 0 10px 30px rgba(224, 109, 152, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 24px 16px 110px;
+    }
+
+    /* ログイン画面専用のスタイル */
+    #loginScreen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .login-box {
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      text-align: center;
+      border: 2px solid var(--border);
+    }
+
+    /* ヘッダー */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 0 4px;
+    }
+    
+    .menu-icon-btn {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px rgba(224, 109, 152, 0.08);
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .app-logo {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+      text-decoration: none;
+      cursor: default;
+    }
+    .logo-my {
+      font-family: "Georgia", "Times New Roman", serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 2rem;
+      color: var(--text-sub);
+      letter-spacing: -0.5px;
+    }
+    .logo-cosme {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 900;
+      font-size: 2.1rem;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+    .logo-heart {
+      font-size: 1.2rem;
+      color: var(--primary);
+      vertical-align: middle;
+      margin-left: -2px;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    /* 検索バー */
+    .search-bar-box {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 30px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(224, 109, 152, 0.06);
+    }
+    .search-bar-box input {
+      border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: var(--text-main);
+    }
+
+    /* フォームカード */
+    .form-card {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 22px;
+      margin-bottom: 24px;
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .form-title {
+      font-weight: bold;
+      color: var(--accent);
+      margin-bottom: 14px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group.full { grid-column: span 2; }
+    label { font-size: 0.72rem; font-weight: bold; color: var(--text-sub); }
+    
+    input, textarea, select {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      font-size: 0.85rem;
+      outline: none;
+      background: #fffcfd;
+      color: var(--text-main);
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--primary); }
+    textarea { height: 60px; resize: none; }
+
+    .select-picker-trigger {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      font-size: 0.85rem;
+      background: #fffcfd;
+      color: var(--text-main);
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .select-picker-trigger::after {
+      content: "▼";
+      font-size: 0.65rem;
+      color: var(--text-sub);
+    }
+
+    /* 日付ピッカー */
+    .date-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .date-input-wrapper input[type="date"] {
+      appearance: none;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+    .calendar-icon-overlay {
+      position: absolute;
+      right: 14px;
+      pointer-events: none;
+      font-size: 0.95rem;
+    }
+
+    /* チップリスト */
+    .selected-tags-box {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+    }
+    .tag-chip {
+      background: var(--primary-soft); color: var(--accent); font-size: 0.72rem; padding: 4px 10px; border-radius: 10px; font-weight: bold; display: flex; align-items: center; gap: 6px;
+    }
+    .tag-chip span { cursor: pointer; }
+
+    /* 画像アップロード */
+    .image-picker-box {
+      border: 2px dashed var(--primary);
+      background: var(--primary-soft);
+      border-radius: 16px;
+      padding: 6px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+    .image-picker-preview {
+      width: 40px; height: 40px; object-fit: cover; border-radius: 10px; display: none;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #f7a8c4, #e06d98);
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.95rem;
+      box-shadow: 0 6px 15px rgba(224, 109, 152, 0.3);
+      margin-top: 10px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-submit:active { transform: scale(0.98); }
+
+    /* サマリー横スクロール */
+    .summary-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      scrollbar-width: none;
+    }
+    .summary-scroll::-webkit-scrollbar { display: none; }
+    .summary-badge {
+      background: var(--card-bg);
+      color: var(--text-main);
+      padding: 7px 16px;
+      border-radius: 22px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 2px 6px rgba(224, 109, 152, 0.04);
+      transition: all 0.2s;
+    }
+    .summary-badge.selected {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3);
+    }
+
+    /* アイテム一覧 */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .item-card {
+      background: var(--card-bg);
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 20px rgba(224, 109, 152, 0.07);
+      display: flex;
+      flex-direction: column;
+    }
+    .item-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .item-img {
+      width: 100%; height: 135px; object-fit: cover; background: #fff0f5; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;
+    }
+    .item-body { padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+    .item-brand { font-size: 0.65rem; color: var(--text-sub); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+    .item-name { font-weight: bold; font-size: 0.85rem; margin: 2px 0 6px; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+    .tag { background: var(--primary-soft); color: var(--accent); font-size: 0.65rem; padding: 3px 9px; border-radius: 12px; font-weight: bold; }
+    .status-badge { font-size: 0.62rem; padding: 2px 7px; border-radius: 8px; font-weight: bold; }
+    .badge-using { background: #e8f8f0; color: #10b981; border: 1px solid #a7f3d0; }
+    .badge-stock { background: #fff1f5; color: #e11d48; border: 1px solid #fecdd3; }
+    .badge-finished { background: #f4f4f5; color: #71717a; border: 1px solid #e4e4e7; }
+    .badge-buy { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+    .badge-wishlist { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
+    .badge-expire-near { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+    .badge-expire-over { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+
+    /* ボトムナビ（5つ） */
+    .bottom-nav {
+      position: fixed;
+      bottom: 16px; left: 16px; right: 16px;
+      max-width: 468px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid var(--border);
+      border-radius: 34px;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 4px;
+      box-shadow: 0 12px 35px rgba(224, 109, 152, 0.18);
+      z-index: 900;
+    }
+    .nav-item {
+      background: none; border: none;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      font-size: 0.62rem; font-weight: bold; color: var(--text-sub);
+      cursor: pointer; transition: all 0.2s;
+      flex: 1;
+    }
+    .nav-item span.icon { font-size: 1.15rem; }
+    .nav-item.active { color: var(--accent); transform: translateY(-2px); }
+
+    /* サイドメニュー */
+    .side-menu-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; z-index: 2500; justify-content: flex-start;
+    }
+    .side-menu {
+      background: white; width: 280px; height: 100%; padding: 24px; display: flex; flex-direction: column; gap: 16px; border-right: 2px solid var(--border); animation: slideRight 0.3s ease;
+    }
+    @keyframes slideRight { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    .menu-item {
+      padding: 14px 16px; border-radius: 16px; font-weight: bold; font-size: 0.95rem; cursor: pointer; background: #fffcfd; border: 1.5px solid var(--border); color: var(--text-main); display: flex; align-items: center; gap: 10px;
+    }
+    .menu-item:hover { background: var(--primary-soft); color: var(--accent); }
+
+    /* モーダル共通 */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px;
+    }
+    .modal {
+      background: white; border-radius: 32px; max-width: 400px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 24px; position: relative; border: 2px solid var(--border); box-shadow: 0 20px 45px rgba(224, 109, 152, 0.2);
+    }
+    .modal-close { 
+      position: absolute; top: 16px; right: 16px; 
+      background: var(--primary-soft); border: none; border-radius: 50%; 
+      width: 32px; height: 32px; cursor: pointer; font-weight: bold; color: var(--accent); 
+      display: flex; align-items: center; justify-content: center; z-index: 10;
+    }
+    .modal-img-container {
+      width: 100%; background: #fff0f5; border-radius: 20px; overflow: hidden; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; max-height: 200px;
+    }
+    .modal-img { width: 100%; height: 100%; object-fit: contain; max-height: 200px; }
+    .modal-detail-row { margin-bottom: 8px; font-size: 0.85rem; }
+    .modal-label { font-weight: bold; color: var(--text-sub); }
+
+    .btn-action {
+      background: var(--primary-soft); color: var(--accent); border: 1.5px solid var(--primary); padding: 11px; border-radius: 18px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 8px; font-size: 0.85rem;
+    }
+    .btn-delete { background: #ffffff; color: #e11d48; border: 1.5px solid #fecdd3; padding: 11px; border-radius: 18px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 0.85rem; }
+
+    /* 中央ポップアップ */
+    .center-modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px;
+    }
+    .center-modal {
+      background: white; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; padding: 22px; border: 2px solid var(--border); box-shadow: 0 20px 45px rgba(224, 109, 152, 0.2);
+    }
+    .sort-list-item {
+      display: flex; justify-content: space-between; align-items: center; background: #fffcfd; border: 1.5px solid var(--border); padding: 12px 14px; border-radius: 14px; margin-bottom: 8px; cursor: grab; user-select: none; touch-action: none;
+    }
+    .drag-handle { color: var(--accent); font-weight: bold; margin-right: 10px; }
+
+    /* 削除ダイアログ */
+    .dialog-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 20px;
+    }
+    .dialog-box {
+      background: white; border-radius: 28px; width: 100%; max-width: 320px; padding: 24px 20px; text-align: center; border: 2px solid var(--border); box-shadow: 0 20px 40px rgba(224, 109, 152, 0.25);
+    }
+    .dialog-buttons { display: flex; gap: 10px; margin-top: 20px; }
+    .dialog-btn { flex: 1; padding: 11px; border-radius: 16px; font-weight: bold; font-size: 0.85rem; cursor: pointer; border: none; }
+    .dialog-btn-cancel { background: #f4f4f5; color: var(--text-sub); }
+    .dialog-btn-confirm { background: #e11d48; color: white; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); }
+
+    .star-rating-box { display: flex; justify-content: center; gap: 8px; font-size: 2.2rem; color: #e4e4e7; cursor: pointer; margin: 12px 0; }
+    .star-rating-box .star.active { color: #f59e0b; }
+  </style>
 </head>
 <body>
 
-    <!-- ログイン画面（お気に入りの見た目を完全再現） -->
-    <div id="login-screen" class="login-box">
-        <div class="logo">My cosme ♥</div>
-        <div class="subtext">メールアドレスでログインして、スマホとPCでデータを同期しよう</div>
-        
-        <input type="email" id="email" class="input-field" placeholder="メールアドレス" value="codeblue04090611@gmail.com">
-        <input type="password" id="password" class="input-field" placeholder="パスワード（6文字以上）">
-        
-        <div class="btn-container">
-            <button class="action-btn btn-login" onclick="handleLogin()">ログイン</button>
-            <button class="action-btn btn-register" onclick="handleRegister()">新規登録</button>
+  <!-- 1. ログイン画面（未ログイン時に表示） -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <div style="font-family: 'Georgia', serif; font-style: italic; font-size: 2rem; color: #9e828d; margin-bottom: 2px;">My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="color: #f7a8c4; font-size: 1.2rem;">♥</span></div>
+      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 25px;">メールアドレスでログインして、スマホとPCでデータを同期しよう</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
+        <div>
+          <label>メールアドレス</label>
+          <input type="email" id="loginEmail" placeholder="メールアドレス" value="codeblue04090611@gmail.com" style="margin-top: 4px;">
         </div>
+        <div>
+          <label>パスワード</label>
+          <input type="password" id="loginPassword" placeholder="パスワード（6文字以上）" style="margin-top: 4px;">
+        </div>
+        
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button onclick="handleLogin()" style="flex:1; background:linear-gradient(135deg, #f7a8c4, #e06d98); color:white; border:none; padding:12px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:0.9rem; box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3);">ログイン</button>
+          <button onclick="handleRegister()" style="flex:1; background:#fde2ec; color:#e06d98; border:1.5px solid #f5d0de; padding:12px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:0.9rem;">新規登録</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. アプリ全体のラップ（ログイン成功後に表示） -->
+  <div id="appRootContainer" style="display: none;">
+
+    <!-- HOME画面ビュー -->
+    <div id="mainView">
+      <div class="app-header">
+        <div class="menu-icon-btn" onclick="openSideMenu()" title="メニュー">≡</div>
+        <div class="app-logo">
+          <span class="logo-my">My</span>
+          <span class="logo-cosme">cosme</span>
+          <span class="logo-heart">♥</span>
+        </div>
+        <div class="menu-icon-btn" onclick="handleLogout()" title="ログアウト" style="font-size: 0.9rem;">🚪</div>
+      </div>
+
+      <!-- 検索バー -->
+      <div class="search-bar-box">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="ブランド名、商品名、#タグで検索..." oninput="render()">
+      </div>
+
+      <!-- 商品登録フォーム（期限チェックタブでは非表示にします） -->
+      <div class="form-card" id="formCardSection">
+        <div class="form-title">新しいコスメを登録</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>ブランド名</label>
+            <input type="text" id="brand" list="brandList" onfocus="updateBrandDatalist()">
+            <datalist id="brandList"></datalist>
+          </div>
+          <div class="form-group">
+            <label>商品名 *</label>
+            <input type="text" id="name" required>
+          </div>
+          <div class="form-group">
+            <label>カテゴリー</label>
+            <div class="select-picker-trigger" id="categorySelectTrigger" onclick="openCenterModal('category')">リップ</div>
+          </div>
+          <div class="form-group">
+            <label>登録時の状態 / リスト</label>
+            <div class="select-picker-trigger" id="statusSelectTrigger" onclick="openCenterModal('status')">今使ってる</div>
+          </div>
+
+          <!-- 金額入力欄（任意） -->
+          <div class="form-group">
+            <label>金額（円）</label>
+            <input type="number" id="priceInput" placeholder="例: 1500" min="0">
+          </div>
+          <div class="form-group">
+            <label>画像</label>
+            <div class="image-picker-box" onclick="document.getElementById('imageInput').click()">
+              <img id="imagePreview" class="image-picker-preview" alt="">
+              <span id="uploadPlaceholder" style="font-size:1.1rem;">📷</span>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
+          </div>
+
+          <!-- 今使ってる用の期限＆数量 -->
+          <div class="form-group">
+            <label>今使ってる期限</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="expireDate">
+              <span class="calendar-icon-overlay">📅</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>今使ってる個数</label>
+            <input type="number" id="usingCountInput" value="1" min="0">
+          </div>
+
+          <!-- ストック用の期限＆数量 -->
+          <div class="form-group">
+            <label>ストックの期限</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="stockExpireDate">
+              <span class="calendar-icon-overlay">📅</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ストックの個数</label>
+            <input type="number" id="stockCountInput" value="0" min="0">
+          </div>
+
+          <div class="form-group full">
+            <label>ハッシュタグ（効能・成分など）</label>
+            <input type="text" id="tagInput" list="tagList" placeholder="文字を入力して選択" oninput="handleTagInput(event)">
+            <datalist id="tagList"></datalist>
+            <div class="selected-tags-box" id="selectedTagsBox"></div>
+          </div>
+          <div class="form-group full">
+            <label>メモ（カラー番号など）</label>
+            <textarea id="notes" placeholder="メモを入力"></textarea>
+          </div>
+        </div>
+
+        <button class="btn-submit" onclick="addItem()">コスメを登録・更新する</button>
+      </div>
+
+      <!-- カテゴリー＆タグフィルター -->
+      <div class="summary-scroll" id="summaryGrid"></div>
+
+      <!-- アイテム一覧 -->
+      <div id="itemList" class="grid"></div>
+
+      <!-- ボトムナビゲーション（今使ってる、ストック、使い切り、買うもの、欲しいもの） -->
+      <nav class="bottom-nav">
+        <button class="nav-item active" id="nav-using" onclick="switchTab('using')">
+          <span class="icon">✨</span>
+          <span>今使ってる</span>
+        </button>
+        <button class="nav-item" id="nav-stock" onclick="switchTab('stock')">
+          <span class="icon">📦</span>
+          <span>ストック</span>
+        </button>
+        <button class="nav-item" id="nav-finished" onclick="switchTab('finished')">
+          <span class="icon">💖</span>
+          <span>使い切り</span>
+        </button>
+        <button class="nav-item" id="nav-buy" onclick="switchTab('buy')">
+          <span class="icon">🛒</span>
+          <span>買うもの</span>
+        </button>
+        <button class="nav-item" id="nav-wishlist" onclick="switchTab('wishlist')">
+          <span class="icon">🪄</span>
+          <span>欲しいもの</span>
+        </button>
+      </nav>
     </div>
 
-    <!-- ログイン後のマイコスメ アプリ画面 -->
-    <div id="app-screen">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fdf2f4; padding-bottom: 15px;">
-            <h1 style="color: #e91e63; margin: 0; font-size: 24px;">My cosme ♥ マイページ</h1>
-            <button onclick="handleLogout()" style="background: #f0f2f5; color: #555; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">ログアウト</button>
+    <!-- favorite log 画面ビュー -->
+    <div id="routineView" style="display:none;">
+      <div class="app-header">
+        <div class="menu-icon-btn" onclick="openSideMenu()" title="メニュー">≡</div>
+        <div class="app-logo">
+          <span class="logo-my">favorite</span>
+          <span class="logo-cosme">log</span>
         </div>
-        <div style="margin-top: 40px; text-align: center;">
-            <h2 style="color: #333; font-size: 20px;">ログイン成功しました✨</h2>
-            <p style="color: #666;">ここにあなたのコスメ管理アプリの画面が広がります！</p>
+        <div style="width: 40px;"></div>
+      </div>
+
+      <!-- 記録フォーム -->
+      <div class="form-card">
+        <div class="form-title">♥ 新しい favorite log を記録</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>カテゴリー</label>
+            <div class="select-picker-trigger" id="favCategoryTrigger" onclick="openCenterModal('favCategory')">メイク</div>
+          </div>
+          <div class="form-group">
+            <label>タイトル</label>
+            <input type="text" id="favTitle" placeholder="例: ニキビケア、最近のメイクボックス">
+          </div>
+
+          <div class="form-group">
+            <label>開始日（いつから）</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="favStartDate">
+              <span class="calendar-icon-overlay">📅</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>終了日（いつまで）</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="favEndDate">
+              <span class="calendar-icon-overlay">📅</span>
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label>商品を追加</label>
+            <div style="display:flex; gap:6px; margin-bottom:6px;">
+              <input type="text" id="favBrandInput" list="favBrandList" placeholder="ブランド名" oninput="updateFavProductList()" onfocus="updateFavBrandList()" style="flex:0.8;">
+              <datalist id="favBrandList"></datalist>
+              
+              <input type="text" id="favProductInput" list="favProductList" placeholder="商品名を選択・入力" style="flex:1.2;">
+              <datalist id="favProductList"></datalist>
+
+              <button style="background:var(--accent); color:white; border:none; padding:0 14px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="addFavItemToList()">追加</button>
+            </div>
+            <div class="selected-tags-box" id="favSelectedItemsBox" style="margin-top:8px;"></div>
+          </div>
+
+          <div class="form-group full">
+            <label>詳細メモ・感想</label>
+            <textarea id="favNotesText" placeholder="お気に入りポイントや組み合わせの感想など" style="height:70px;"></textarea>
+          </div>
         </div>
+        <button class="btn-submit" onclick="addFavoriteLogRecord()">favorite logを保存する</button>
+      </div>
+
+      <h3 style="color:var(--accent); font-size:1.05rem; margin-bottom:12px;">📜 favorite log 履歴</h3>
+      <div id="routineHistoryList" style="display:flex; flex-direction:column; gap:12px;"></div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  </div> <!-- /appRootContainer -->
 
-        const firebaseConfig = {
-            authDomain: "mycosme.firebaseapp.com",
-            projectId: "mycosme"
+  <!-- サイドメニュー -->
+  <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu(event)">
+    <div class="side-menu" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h3 style="color:var(--accent); font-size:1.1rem;">Menu</h3>
+        <button onclick="closeSideMenuDirect()" style="background:var(--primary-soft); border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; color:var(--accent);">✕</button>
+      </div>
+      <div class="menu-item" onclick="showMainView(); closeSideMenuDirect();">
+        <span>🏠</span> HOME
+      </div>
+      <div class="menu-item" onclick="showRoutineView(); closeSideMenuDirect();">
+        <span>♥</span> favorite log
+      </div>
+      <div class="menu-item" onclick="showExpireTab(); closeSideMenuDirect();">
+        <span>⏰</span> 期限チェック
+      </div>
+      <div class="menu-item" onclick="handleLogout(); closeSideMenuDirect();" style="color: #e11d48; border-color: #fecdd3; background: #fff1f5;">
+        <span>🚪</span> ログアウト
+      </div>
+    </div>
+  </div>
+
+  <!-- 各種モーダル -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <div class="center-modal-overlay" id="centerModalOverlay" onclick="closeCenterModal(event)">
+    <div class="center-modal" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 id="centerModalTitle" style="color:var(--accent); font-size:1rem;">選択してください</h3>
+        <button onclick="closeCenterModalDirect()" style="background:var(--primary-soft); border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold; color:var(--accent);">✕</button>
+      </div>
+      <p style="font-size:0.73rem; color:var(--text-sub); margin-bottom:12px;">☰ を長押しして上下に動かすと順番を入れ替えられます</p>
+      <div id="centerModalList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;"></div>
+      <div style="display:flex; gap:6px;">
+        <input type="text" id="centerModalAddInput" placeholder="新しい項目名" style="flex:1;">
+        <button style="background:var(--accent); color:white; border:none; padding:0 14px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="addItemToCenterModal()">追加</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-overlay" id="dialogOverlay">
+    <div class="dialog-box">
+      <h3 style="color:var(--accent); font-size:1.05rem; margin-bottom:8px;">コスメの削除</h3>
+      <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom:4px;">この商品を削除してもよろしいですか？</p>
+      <div class="dialog-buttons">
+        <button class="dialog-btn dialog-btn-cancel" onclick="closeDialog()">キャンセル</button>
+        <button class="dialog-btn dialog-btn-confirm" id="dialogConfirmBtn">削除する</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="ratingModalOverlay">
+    <div class="modal" onclick="event.stopPropagation()" style="text-align:center;">
+      <button class="modal-close" onclick="document.getElementById('ratingModalOverlay').style.display='none'">✕</button>
+      <h3 style="color:var(--accent); font-size:1.1rem; margin-bottom:8px; margin-top:8px;">🎉 使い切りおめでとう！</h3>
+      <p style="font-size:0.82rem; color:var(--text-sub);">このコスメの満足度を評価してね✨</p>
+      <div class="star-rating-box" id="starRatingBox">
+        <span class="star active" onclick="setRating(1)">★</span>
+        <span class="star active" onclick="setRating(2)">★</span>
+        <span class="star active" onclick="setRating(3)">★</span>
+        <span class="star active" onclick="setRating(4)">★</span>
+        <span class="star active" onclick="setRating(5)">★</span>
+      </div>
+      <textarea id="finishReviewInput" placeholder="感想やリピート有無を一言メモ" style="width:100%; margin-bottom:12px;"></textarea>
+      <button class="btn-submit" onclick="submitFinishRating()">記録する</button>
+    </div>
+  </div>
+
+  <!-- Firebase 認証ロジック & アプリのスクリプト -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      authDomain: "mycosme.firebaseapp.com",
+      projectId: "mycosme"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const loginScreen = document.getElementById('loginScreen');
+    const appRootContainer = document.getElementById('appRootContainer');
+
+    // ログイン状態を監視
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginScreen.style.display = 'none';
+        appRootContainer.style.display = 'block';
+        initApp(); // ログイン後にアプリを初期化
+      } else {
+        loginScreen.style.display = 'flex';
+        appRootContainer.style.display = 'none';
+      }
+    });
+
+    // ログイン処理
+    window.handleLogin = async function() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!email || !password) { alert('メールアドレスとパスワードを入力してください'); return; }
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        alert('ログインに失敗しました: ' + error.message);
+      }
+    };
+
+    // 新規登録処理
+    window.handleRegister = async function() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!email || !password) { alert('メールアドレスとパスワードを入力してください'); return; }
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        alert('新規登録に失敗しました: ' + error.message);
+      }
+    };
+
+    // ログアウト処理
+    window.handleLogout = async function() {
+      if (confirm('ログアウトしますか？')) {
+        await signOut(auth);
+      }
+    };
+  </script>
+
+  <!-- あなたのコスメ管理アプリ本体のスクリプト -->
+  <script>
+    let categories = ["リップ", "アイシャドウ", "ファンデ・下地", "日焼け止め", "スキンケア", "クレンジング", "パウダー", "チーク", "その他"];
+    let statuses = [
+      { key: "using", label: "今使ってる" },
+      { key: "stock", label: "ストック" },
+      { key: "finished", label: "使い切った" },
+      { key: "buy", label: "買うもの" },
+      { key: "wishlist", label: "欲しいもの" }
+    ];
+    let favCategories = ["メイク", "スキンケア"];
+    let formFavCategory = "メイク";
+
+    let brands = [];
+    let allTags = []; 
+    let formTags = []; 
+    let routines = []; 
+    let currentFavItems = [];
+
+    let currentTab = 'using';
+    let selectedCategoryFilter = null;
+    let selectedTagFilter = null;
+    let items = [];
+    let currentImageBase64 = '';
+    let activeFinishItemId = null;
+    let currentSelectedRating = 5;
+
+    let formCategoryValue = "リップ";
+    let formStatusKey = "using";
+    let currentModalType = '';
+
+    function initApp() {
+      if (localStorage.getItem('mycosme_categories')) categories = JSON.parse(localStorage.getItem('mycosme_categories'));
+      if (localStorage.getItem('mycosme_statuses')) statuses = JSON.parse(localStorage.getItem('mycosme_statuses'));
+      if (localStorage.getItem('mycosme_fav_categories')) favCategories = JSON.parse(localStorage.getItem('mycosme_fav_categories'));
+      if (localStorage.getItem('mycosme_brands')) brands = JSON.parse(localStorage.getItem('mycosme_brands'));
+      if (localStorage.getItem('mycosme_items')) items = JSON.parse(localStorage.getItem('mycosme_items'));
+      if (localStorage.getItem('mycosme_all_tags')) allTags = JSON.parse(localStorage.getItem('mycosme_all_tags'));
+      if (localStorage.getItem('mycosme_routines')) routines = JSON.parse(localStorage.getItem('mycosme_routines'));
+
+      if (categories.length > 0) formCategoryValue = categories[0];
+      if (!statuses.some(s => s.key === formStatusKey) && statuses.length > 0) formStatusKey = statuses[0].key;
+      if (favCategories.length > 0) formFavCategory = favCategories[0];
+
+      updateFormTriggers();
+      updateBrandDatalist();
+      updateTagDatalist();
+      render();
+    }
+
+    function saveData() {
+      localStorage.setItem('mycosme_items', JSON.stringify(items));
+      localStorage.setItem('mycosme_categories', JSON.stringify(categories));
+      localStorage.setItem('mycosme_statuses', JSON.stringify(statuses));
+      localStorage.setItem('mycosme_fav_categories', JSON.stringify(favCategories));
+      localStorage.setItem('mycosme_brands', JSON.stringify(brands));
+      localStorage.setItem('mycosme_all_tags', JSON.stringify(allTags));
+      localStorage.setItem('mycosme_routines', JSON.stringify(routines));
+    }
+
+    function updateFormTriggers() {
+      document.getElementById('categorySelectTrigger').textContent = formCategoryValue;
+      const stObj = statuses.find(s => s.key === formStatusKey);
+      document.getElementById('statusSelectTrigger').textContent = stObj ? stObj.label : '選択';
+      document.getElementById('favCategoryTrigger').textContent = formFavCategory;
+    }
+
+    /* ハッシュタグ予測変換用 */
+    function handleTagInput(e) {
+      const val = e.target.value.trim().replace(/^#/, '');
+      if (val && !formTags.includes(val)) {
+        if (allTags.includes(val)) {
+          formTags.push(val);
+          e.target.value = '';
+          renderSelectedTags();
+        }
+      }
+    }
+
+    document.getElementById('tagInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = this.value.trim().replace(/^#/, '');
+        if (val && !formTags.includes(val)) {
+          formTags.push(val);
+          if (!allTags.includes(val)) allTags.push(val);
+          this.value = '';
+          renderSelectedTags();
+        }
+      }
+    });
+
+    function removeFormTag(idx) {
+      formTags.splice(idx, 1);
+      renderSelectedTags();
+    }
+
+    function renderSelectedTags() {
+      const box = document.getElementById('selectedTagsBox');
+      box.innerHTML = '';
+      formTags.forEach((t, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'tag-chip';
+        chip.innerHTML = `#${t} <span onclick="removeFormTag(${idx})">×</span>`;
+        box.appendChild(chip);
+      });
+    }
+
+    function updateTagDatalist() {
+      const dl = document.getElementById('tagList');
+      dl.innerHTML = '';
+      allTags.forEach(t => {
+        if (!formTags.includes(t)) {
+          const opt = document.createElement('option');
+          opt.value = t;
+          dl.appendChild(opt);
+        }
+      });
+    }
+
+    /* 使用期限判定＆日数計算 */
+    function getExpireInfo(expireDateStr) {
+      if (!expireDateStr) return { status: 'normal', text: '' };
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const exp = new Date(expireDateStr);
+      exp.setHours(0,0,0,0);
+      const diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 0) {
+        return { status: 'over', text: `🚨 期限切れ (${Math.abs(diffDays)}日経過)` };
+      } else if (diffDays <= 30) {
+        return { status: 'near', text: `⚠️ あと ${diffDays} 日` };
+      }
+      return { status: 'normal', text: '' };
+    }
+
+    /* サイドメニュー・画面切り替え */
+    function openSideMenu() { document.getElementById('sideMenuOverlay').style.display = 'flex'; }
+    function closeSideMenu(e) { if (e.target.id === 'sideMenuOverlay') closeSideMenuDirect(); }
+    function closeSideMenuDirect() { document.getElementById('sideMenuOverlay').style.display = 'none'; }
+
+    function showRoutineView() {
+      document.getElementById('mainView').style.display = 'none';
+      document.getElementById('routineView').style.display = 'block';
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('favStartDate').value = todayStr;
+      document.getElementById('favEndDate').value = todayStr;
+      renderRoutineHistory();
+    }
+    function showMainView() {
+      document.getElementById('routineView').style.display = 'none';
+      document.getElementById('mainView').style.display = 'block';
+    }
+    function showExpireTab() {
+      showMainView();
+      switchTab('expire');
+    }
+
+    /* favorite log 関連処理 */
+    function updateFavBrandList() {
+      const dl = document.getElementById('favBrandList');
+      dl.innerHTML = '';
+      brands.forEach(b => {
+        if (b.trim() !== '') {
+          const opt = document.createElement('option');
+          opt.value = b;
+          dl.appendChild(opt);
+        }
+      });
+    }
+
+    function updateFavProductList() {
+      const brandVal = document.getElementById('favBrandInput').value.trim().toLowerCase();
+      const dl = document.getElementById('favProductList');
+      dl.innerHTML = '';
+      
+      const filtered = items.filter(i => !brandVal || (i.brand && i.brand.toLowerCase().includes(brandVal)));
+      filtered.forEach(i => {
+        const opt = document.createElement('option');
+        opt.value = `${i.brand ? i.brand + ' - ' : ''}${i.name}`;
+        dl.appendChild(opt);
+      });
+    }
+
+    function addFavItemToList() {
+      const prodInput = document.getElementById('favProductInput').value.trim();
+      if (!prodInput) return;
+      if (!currentFavItems.includes(prodInput)) {
+        currentFavItems.push(prodInput);
+        renderFavSelectedItems();
+        document.getElementById('favProductInput').value = '';
+        document.getElementById('favBrandInput').value = '';
+      }
+    }
+
+    function removeFavItem(idx) {
+      currentFavItems.splice(idx, 1);
+      renderFavSelectedItems();
+    }
+
+    function renderFavSelectedItems() {
+      const box = document.getElementById('favSelectedItemsBox');
+      box.innerHTML = '';
+      currentFavItems.forEach((item, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'tag-chip';
+        chip.style.background = 'var(--card-bg)';
+        chip.style.border = '1px solid var(--border)';
+        chip.innerHTML = `${item} <span onclick="removeFavItem(${idx})">×</span>`;
+        box.appendChild(chip);
+      });
+    }
+
+    function addFavoriteLogRecord() {
+      const category = formFavCategory;
+      const title = document.getElementById('favTitle').value.trim() || 'お気に入りコスメ布陣';
+      let startDate = document.getElementById('favStartDate').value;
+      let endDate = document.getElementById('favEndDate').value;
+      
+      const todayStr = new Date().toISOString().split('T')[0];
+      if (!startDate) startDate = todayStr;
+      
+      const periodStr = endDate && endDate >= startDate ? `${startDate} 〜 ${endDate}` : `${startDate} 〜`;
+      const notes = document.getElementById('favNotesText').value.trim();
+
+      if (currentFavItems.length === 0) { alert('商品を少なくとも1つ追加してください'); return; }
+
+      routines.unshift({
+        id: Date.now(),
+        category,
+        title,
+        period: periodStr,
+        items: [...currentFavItems],
+        notes
+      });
+
+      saveData();
+      document.getElementById('favTitle').value = '';
+      document.getElementById('favNotesText').value = '';
+      currentFavItems = [];
+      renderFavSelectedItems();
+      renderRoutineHistory();
+      alert('favorite logを保存しました！✨');
+    }
+
+    function renderRoutineHistory() {
+      const list = document.getElementById('routineHistoryList');
+      list.innerHTML = '';
+      if (routines.length === 0) {
+        list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:30px 0; font-size:0.85rem;">まだ履歴がありません</div>`;
+        return;
+      }
+      routines.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'form-card';
+        div.style.marginBottom = '0';
+        const itemsHtml = r.items.map(i => `<span class="tag" style="margin:2px; display:inline-block; background:var(--card-bg); border:1px solid var(--border);">${i}</span>`).join('');
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span class="tag">${r.category}</span>
+            <span style="font-size:0.75rem; color:var(--text-sub);">🗓 期間: ${r.period}</span>
+          </div>
+          <div style="font-weight:bold; color:var(--accent); font-size:1rem; margin-bottom:6px;">${r.title}</div>
+          <div style="margin-bottom:8px; display:flex; flex-wrap:wrap; gap:4px;">${itemsHtml}</div>
+          ${r.notes ? `<div style="font-size:0.82rem; white-space:pre-wrap; color:var(--text-main); background:#fff5f8; padding:8px 12px; border-radius:12px;">${r.notes}</div>` : ''}
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    /* 画像プレビュー */
+    function previewImage(input) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImageBase64 = e.target.result;
+          const preview = document.getElementById('imagePreview');
+          const placeholder = document.getElementById('uploadPlaceholder');
+          preview.src = currentImageBase64;
+          preview.style.display = 'block';
+          placeholder.style.display = 'none';
         };
+        reader.readAsDataURL(file);
+      }
+    }
+    function resetImagePicker() {
+      currentImageBase64 = '';
+      document.getElementById('imageInput').value = '';
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('uploadPlaceholder').style.display = 'block';
+    }
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+    /* 中央モーダル */
+    function openCenterModal(type) {
+      currentModalType = type;
+      let titleText = '選択してください';
+      if (type === 'category') titleText = 'カテゴリーの選択・並べ替え';
+      else if (type === 'status') titleText = '状態の選択・並べ替え';
+      else if (type === 'favCategory') titleText = 'favorite log カテゴリーの管理';
 
-        const loginScreen = document.getElementById('login-screen');
-        const appScreen = document.getElementById('app-screen');
+      document.getElementById('centerModalTitle').textContent = titleText;
+      renderCenterModalList();
+      document.getElementById('centerModalOverlay').style.display = 'flex';
+    }
 
-        // ログイン状態を監視して、ログインしていれば自動でアプリ画面を表示
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loginScreen.style.display = 'none';
-                appScreen.style.display = 'block';
-            } else {
-                loginScreen.style.display = 'block';
-                appScreen.style.display = 'none';
-            }
+    function renderCenterModalList() {
+      const listContainer = document.getElementById('centerModalList');
+      listContainer.innerHTML = '';
+      
+      let targetList = categories;
+      if (currentModalType === 'status') targetList = statuses.map(s => s.label);
+      else if (currentModalType === 'favCategory') targetList = favCategories;
+
+      targetList.forEach((itemVal, index) => {
+        const labelText = typeof itemVal === 'string' ? itemVal : itemVal.label;
+        const item = document.createElement('div');
+        item.className = 'sort-list-item';
+        item.setAttribute('draggable', 'true');
+        item.innerHTML = `
+          <div style="display:flex; align-items:center; flex:1;" onclick="selectCenterItem('${labelText}')">
+            <span class="drag-handle">☰</span>
+            <span style="font-weight:bold; font-size:0.85rem;">${labelText}</span>
+          </div>
+          ${targetList.length > 1 ? `<button onclick="event.stopPropagation(); deleteCenterItem(${index})" style="background:none; border:none; cursor:pointer; color:#e11d48; font-size:0.75rem; font-weight:bold;">削除</button>` : ''}
+        `;
+        setupDragAndDropItem(item, index);
+        listContainer.appendChild(item);
+      });
+    }
+
+    function setupDragAndDropItem(item, index) {
+      const listContainer = document.getElementById('centerModalList');
+      item.addEventListener('dragstart', (e) => {
+        item.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', index);
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        saveData();
+        renderCenterModalList();
+      });
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const draggingItem = listContainer.querySelector('.dragging');
+        if (!draggingItem || draggingItem === item) return;
+        const rect = item.getBoundingClientRect();
+        const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+        if (next) listContainer.insertBefore(draggingItem, item.nextSibling);
+        else listContainer.insertBefore(draggingItem, item);
+        updateArrayOrderFromDOM();
+      });
+
+      item.addEventListener('touchstart', () => { item.classList.add('dragging'); }, {passive: true});
+      item.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touchLocation = e.touches[0];
+        const target = document.elementFromPoint(touchLocation.clientX, touchLocation.clientY);
+        const targetItem = target ? target.closest('.sort-list-item') : null;
+        if (targetItem && targetItem !== item && targetItem.parentNode === listContainer) {
+          const rect = targetItem.getBoundingClientRect();
+          const next = (touchLocation.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+          if (next) listContainer.insertBefore(item, targetItem.nextSibling);
+          else listContainer.insertBefore(item, targetItem);
+          updateArrayOrderFromDOM();
+        }
+      }, {passive: false});
+      item.addEventListener('touchend', () => {
+        item.classList.remove('dragging');
+        saveData();
+        renderCenterModalList();
+      });
+    }
+
+    function updateArrayOrderFromDOM() {
+      const listContainer = document.getElementById('centerModalList');
+      const newArr = [];
+      listContainer.querySelectorAll('.sort-list-item span:nth-child(2)').forEach(el => {
+        newArr.push(el.textContent.trim());
+      });
+
+      if (currentModalType === 'category') categories = newArr;
+      else if (currentModalType === 'status') {
+        statuses = newArr.map(label => {
+          const found = statuses.find(s => s.label === label);
+          return found || { key: 'custom_' + Math.random(), label };
         });
+      } else if (currentModalType === 'favCategory') favCategories = newArr;
+      saveData();
+    }
 
-        // ログインボタンの処理
-        window.handleLogin = async function() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+    function selectCenterItem(val) {
+      if (currentModalType === 'category') formCategoryValue = val;
+      else if (currentModalType === 'status') {
+        const found = statuses.find(s => s.label === val);
+        if (found) formStatusKey = found.key;
+      } else if (currentModalType === 'favCategory') formFavCategory = val;
 
-            if (!email || !password) {
-                alert('メールアドレスとパスワードを入力してください。');
-                return;
-            }
+      updateFormTriggers();
+      closeCenterModalDirect();
+    }
 
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-            } catch (error) {
-                alert('ログインに失敗しました: ' + error.message);
-            }
+    function addItemToCenterModal() {
+      const input = document.getElementById('centerModalAddInput');
+      const val = input.value.trim();
+      if (!val) return;
+
+      if (currentModalType === 'category') {
+        if (!categories.includes(val)) { categories.push(val); formCategoryValue = val; }
+      } else if (currentModalType === 'status') {
+        if (!statuses.some(s => s.label === val)) {
+          const newKey = 'custom_' + Date.now();
+          statuses.push({ key: newKey, label: val });
+          formStatusKey = newKey;
+        }
+      } else if (currentModalType === 'favCategory') {
+        if (!favCategories.includes(val)) { favCategories.push(val); formFavCategory = val; }
+      }
+
+      saveData();
+      input.value = '';
+      updateFormTriggers();
+      renderCenterModalList();
+    }
+
+    function deleteCenterItem(index) {
+      if (currentModalType === 'category') {
+        if (categories.length <= 1) return;
+        categories.splice(index, 1); formCategoryValue = categories[0];
+      } else if (currentModalType === 'status') {
+        if (statuses.length <= 1) return;
+        statuses.splice(index, 1); formStatusKey = statuses[0].key;
+      } else if (currentModalType === 'favCategory') {
+        if (favCategories.length <= 1) return;
+        favCategories.splice(index, 1); formFavCategory = favCategories[0];
+      }
+      saveData();
+      updateFormTriggers();
+      renderCenterModalList();
+    }
+
+    function closeCenterModalDirect() { document.getElementById('centerModalOverlay').style.display = 'none'; }
+    function closeCenterModal(e) { if (e.target.id === 'centerModalOverlay') closeCenterModalDirect(); }
+
+    function updateBrandDatalist() {
+      items.forEach(i => { if (i.brand && !brands.includes(i.brand)) brands.push(i.brand); });
+      const dl = document.getElementById('brandList');
+      dl.innerHTML = '';
+      brands.forEach(b => { if (b.trim() !== '') { const o = document.createElement('option'); o.value = b; dl.appendChild(o); } });
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      selectedCategoryFilter = null;
+      selectedTagFilter = null;
+      ['using', 'stock', 'finished', 'buy', 'wishlist', 'expire'].forEach(t => {
+        const el = document.getElementById(`nav-${t}`);
+        if (el) el.classList.toggle('active', t === tab);
+      });
+
+      const formCard = document.getElementById('formCardSection');
+      if (tab === 'expire') {
+        formCard.style.display = 'none';
+      } else {
+        formCard.style.display = 'block';
+      }
+
+      render();
+    }
+
+    function filterCategory(cat) { selectedCategoryFilter = (selectedCategoryFilter === cat) ? null : cat; selectedTagFilter = null; render(); }
+    function filterTag(tag) { selectedTagFilter = (selectedTagFilter === tag) ? null : tag; selectedCategoryFilter = null; render(); }
+
+    function normalizeStr(str) { return (str || '').replace(/\s+/g, '').toLowerCase(); }
+
+    function addItem() {
+      const name = document.getElementById('name').value.trim();
+      if (!name) { alert('商品名を入力してください'); return; }
+      const brandInput = document.getElementById('brand').value.trim();
+      if (brandInput && !brands.includes(brandInput)) brands.push(brandInput);
+      const category = formCategoryValue;
+      const status = formStatusKey;
+      
+      const price = parseInt(document.getElementById('priceInput').value) || 0;
+      const expireDate = document.getElementById('expireDate').value;
+      const stockExpireDate = document.getElementById('stockExpireDate').value;
+      let usingCount = parseInt(document.getElementById('usingCountInput').value) || 0;
+      let stockCount = parseInt(document.getElementById('stockCountInput').value) || 0;
+
+      const notes = document.getElementById('notes').value.trim();
+      const tags = [...formTags];
+
+      const normName = normalizeStr(name);
+      const normBrand = normalizeStr(brandInput);
+      const existingIndex = items.findIndex(i => normalizeStr(i.name) === normName && normalizeStr(i.brand) === normBrand);
+
+      if (existingIndex !== -1) {
+        const existing = items[existingIndex];
+        existing.usingCount = (existing.usingCount || 0) + usingCount;
+        existing.stockCount = (existing.stockCount || 0) + stockCount;
+        if (status === 'finished') existing.finishedCount = (existing.finishedCount || 0) + 1;
+        if (status === 'buy') existing.isBuy = true;
+        if (status === 'wishlist') existing.isWishlist = true;
+
+        if (price > 0) existing.price = price;
+        if (currentImageBase64) existing.img = currentImageBase64;
+        if (expireDate) existing.expireDate = expireDate;
+        if (stockExpireDate) existing.stockExpireDate = stockExpireDate;
+        if (notes) existing.notes = notes;
+        existing.category = category;
+        tags.forEach(t => { if (!existing.tags.includes(t)) existing.tags.push(t); });
+      } else {
+        let isB = (status === 'buy');
+        let isW = (status === 'wishlist');
+
+        items.unshift({
+          id: Date.now(),
+          brand: brandInput,
+          name: name,
+          category: category,
+          price: price,
+          usingCount: usingCount,
+          stockCount: stockCount,
+          finishedCount: status === 'finished' ? 1 : 0,
+          isBuy: isB,
+          isWishlist: isW,
+          expireDate: expireDate,
+          stockExpireDate: stockExpireDate,
+          tags: tags,
+          notes: notes,
+          img: currentImageBase64,
+          ratings: []
+        });
+      }
+
+      saveData();
+      updateBrandDatalist();
+      formTags = [];
+      renderSelectedTags();
+      updateTagDatalist();
+      render();
+
+      document.getElementById('name').value = '';
+      document.getElementById('brand').value = '';
+      document.getElementById('priceInput').value = '';
+      document.getElementById('expireDate').value = '';
+      document.getElementById('stockExpireDate').value = '';
+      document.getElementById('usingCountInput').value = '1';
+      document.getElementById('stockCountInput').value = '0';
+      document.getElementById('notes').value = '';
+      document.getElementById('tagInput').value = '';
+      resetImagePicker();
+      alert('登録・更新しました！✨');
+    }
+
+    function openFinishRatingModal(id) {
+      activeFinishItemId = id;
+      setRating(5);
+      document.getElementById('finishReviewInput').value = '';
+      document.getElementById('ratingModalOverlay').style.display = 'flex';
+    }
+    function setRating(val) {
+      currentSelectedRating = val;
+      document.querySelectorAll('#starRatingBox .star').forEach((star, index) => star.classList.toggle('active', index < val));
+    }
+    function submitFinishRating() {
+      if (!activeFinishItemId) return;
+      const item = items.find(i => i.id === activeFinishItemId);
+      if (item) {
+        if ((item.usingCount || 0) > 0) item.usingCount -= 1;
+        item.finishedCount = (item.finishedCount || 0) + 1;
+        if (!item.ratings) item.ratings = [];
+        item.ratings.push(currentSelectedRating);
+        const rev = document.getElementById('finishReviewInput').value.trim();
+        if (rev) item.notes = (item.notes ? item.notes + '\n' : '') + `【使い切り感想】★${currentSelectedRating}: ${rev}`;
+      }
+      saveData();
+      document.getElementById('ratingModalOverlay').style.display = 'none';
+      closeModalDirect();
+      render();
+    }
+
+    function changeCount(id, field, delta) {
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+      if (field === 'using') {
+        item.usingCount = Math.max(0, (item.usingCount || 0) + delta);
+      } else if (field === 'stock') {
+        item.stockCount = Math.max(0, (item.stockCount || 0) + delta);
+      } else if (field === 'finished') {
+        item.finishedCount = Math.max(0, (item.finishedCount || 0) + delta);
+      }
+      saveData();
+      openModal(id);
+      render();
+    }
+
+    function toggleFlagFromModal(id, flagKey) {
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+      if (flagKey === 'buy') item.isBuy = !item.isBuy;
+      if (flagKey === 'wishlist') item.isWishlist = !item.isWishlist;
+      saveData();
+      openModal(id);
+      render();
+    }
+
+    function render() {
+      renderSummary();
+
+      let tabItems = items.filter(i => {
+        if (currentTab === 'using') return (i.usingCount || 0) > 0;
+        if (currentTab === 'stock') return (i.stockCount || 0) > 0;
+        if (currentTab === 'finished') return (i.finishedCount || 0) > 0;
+        if (currentTab === 'buy') return i.isBuy;
+        if (currentTab === 'wishlist') return i.isWishlist;
+        if (currentTab === 'expire') {
+          const infoUsing = getExpireInfo(i.expireDate);
+          const infoStock = getExpireInfo(i.stockExpireDate);
+          return infoUsing.status === 'near' || infoUsing.status === 'over' || infoStock.status === 'near' || infoStock.status === 'over';
+        }
+        return false;
+      });
+
+      let displayItems = tabItems;
+      const searchKeyword = normalizeStr(document.getElementById('searchInput').value);
+
+      if (searchKeyword) {
+        const cleanKeyword = searchKeyword.replace(/^#/, '');
+        displayItems = tabItems.filter(i => {
+          const matchText = normalizeStr(i.name).includes(searchKeyword) || 
+                            normalizeStr(i.brand).includes(searchKeyword) || 
+                            normalizeStr(i.category).includes(searchKeyword) ||
+                            normalizeStr(i.notes).includes(searchKeyword);
+          
+          const matchTag = i.tags && i.tags.some(t => normalizeStr(t).includes(cleanKeyword));
+
+          return matchText || matchTag;
+        });
+      } else if (selectedCategoryFilter) {
+        displayItems = tabItems.filter(i => i.category === selectedCategoryFilter);
+      } else if (selectedTagFilter) {
+        displayItems = tabItems.filter(i => i.tags && i.tags.includes(selectedTagFilter));
+      }
+
+      const list = document.getElementById('itemList');
+      list.innerHTML = '';
+
+      if (displayItems.length === 0) {
+        let msg = '該当するコスメがありません';
+        if (currentTab === 'expire') msg = '一ヶ月以内に期限が切れるコスメはありません✨';
+        if (currentTab === 'buy') msg = '買うものリストに追加されたコスメはありません🛒';
+        if (currentTab === 'wishlist') msg = '欲しいものリストに追加されたコスメはありません🪄';
+        list.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-sub); padding:40px 0; font-size:0.85rem;">${msg}</div>`;
+        return;
+      }
+
+      displayItems.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.onclick = () => openModal(item.id);
+
+        const imgHtml = item.img ? `<img src="${item.img}" class="item-img" alt="${item.name}">` : `<div class="item-img">🎀</div>`;
+
+        let badgesHtml = '';
+        if ((item.usingCount || 0) > 0) badgesHtml += `<span class="status-badge badge-using">使用中:${item.usingCount}</span>`;
+        if ((item.stockCount || 0) > 0) badgesHtml += `<span class="status-badge badge-stock">ストック:${item.stockCount}</span>`;
+        if ((item.finishedCount || 0) > 0) badgesHtml += `<span class="status-badge badge-finished">使い切り:${item.finishedCount}</span>`;
+        if (item.isBuy) badgesHtml += `<span class="status-badge badge-buy">買う</span>`;
+        if (item.isWishlist) badgesHtml += `<span class="status-badge badge-wishlist">欲しい</span>`;
+
+        const infoUsing = getExpireInfo(item.expireDate);
+        const infoStock = getExpireInfo(item.stockExpireDate);
+
+        if (infoUsing.status === 'near' || infoStock.status === 'near') {
+          const txt = infoUsing.status === 'near' ? infoUsing.text : infoStock.text;
+          badgesHtml += `<span class="status-badge badge-expire-near">${txt}</span>`;
+        }
+        if (infoUsing.status === 'over' || infoStock.status === 'over') {
+          const txt = infoUsing.status === 'over' ? infoUsing.text : infoStock.text;
+          badgesHtml += `<span class="status-badge badge-expire-over">${txt}</span>`;
+        }
+
+        card.innerHTML = `
+          ${imgHtml}
+          <div class="item-body">
+            <div>
+              <div class="item-brand">${item.brand || 'No Brand'}</div>
+              <div class="item-name">${item.name}</div>
+            </div>
+            <div class="item-footer">
+              <span class="tag">${item.category}</span>
+              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">${badgesHtml}</div>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function renderSummary() {
+      const tabItems = items.filter(i => {
+        if (currentTab === 'using') return (i.usingCount || 0) > 0;
+        if (currentTab === 'stock') return (i.stockCount || 0) > 0;
+        if (currentTab === 'finished') return (i.finishedCount || 0) > 0;
+        if (currentTab === 'buy') return i.isBuy;
+        if (currentTab === 'wishlist') return i.isWishlist;
+        if (currentTab === 'expire') {
+          const infoUsing = getExpireInfo(i.expireDate);
+          const infoStock = getExpireInfo(i.stockExpireDate);
+          return infoUsing.status === 'near' || infoUsing.status === 'over' || infoStock.status === 'near' || infoStock.status === 'over';
+        }
+        return false;
+      });
+
+      const counts = {};
+      const tagCounts = {};
+      tabItems.forEach(i => {
+        counts[i.category] = (counts[i.category] || 0) + 1;
+        if (i.tags) {
+          i.tags.forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+        }
+      });
+
+      const summaryGrid = document.getElementById('summaryGrid');
+      summaryGrid.innerHTML = '';
+
+      const allBadge = document.createElement('div');
+      allBadge.className = `summary-badge ${(selectedCategoryFilter === null && selectedTagFilter === null) ? 'selected' : ''}`;
+      allBadge.textContent = `すべて (${tabItems.length})`;
+      allBadge.onclick = () => { selectedCategoryFilter = null; selectedTagFilter = null; render(); };
+      summaryGrid.appendChild(allBadge);
+
+      for (const [cat, count] of Object.entries(counts)) {
+        const badge = document.createElement('div');
+        badge.className = `summary-badge ${selectedCategoryFilter === cat ? 'selected' : ''}`;
+        badge.textContent = `${cat}: ${count}`;
+        badge.onclick = () => filterCategory(cat);
+        summaryGrid.appendChild(badge);
+      }
+
+      for (const [tag, count] of Object.entries(tagCounts)) {
+        const badge = document.createElement('div');
+        badge.className = `summary-badge ${selectedTagFilter === tag ? 'selected' : ''}`;
+        badge.textContent = `#${tag}: ${count}`;
+        badge.onclick = () => filterTag(tag);
+        summaryGrid.appendChild(badge);
+      }
+    }
+
+    /* 商品詳細モーダル（通常表示） */
+    function openModal(id) {
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+
+      const content = document.getElementById('modalContent');
+      const imgContentHtml = item.img ? `<img src="${item.img}" class="modal-img">` : `<div style="font-size:3rem;">🎀</div>`;
+
+      let avgRatingText = '評価なし';
+      if (item.ratings && item.ratings.length > 0) {
+        const avg = (item.ratings.reduce((a,b)=>a+b,0) / item.ratings.length).toFixed(1);
+        avgRatingText = `★ ${avg} （${item.ratings.length}回）`;
+      }
+
+      let tagsHtml = item.tags && item.tags.length ? item.tags.map(t => `<span class="tag" style="margin-right:4px;">#${t}</span>`).join('') : 'なし';
+
+      const infoUsing = getExpireInfo(item.expireDate);
+      let expInfo = item.expireDate ? `${item.expireDate}` : '未設定';
+      if (infoUsing.status === 'near' || infoUsing.status === 'over') {
+        expInfo += ` <span style="color:${infoUsing.status==='over'?'#dc2626':'#d97706'}; font-weight:bold;">(${infoUsing.text})</span>`;
+      }
+
+      const infoStock = getExpireInfo(item.stockExpireDate);
+      let stockExpInfo = item.stockExpireDate ? `${item.stockExpireDate}` : '未設定';
+      if (infoStock.status === 'near' || infoStock.status === 'over') {
+        stockExpInfo += ` <span style="color:${infoStock.status==='over'?'#dc2626':'#d97706'}; font-weight:bold;">(${infoStock.text})</span>`;
+      }
+
+      const priceText = (item.price !== undefined && item.price > 0) ? `¥${item.price.toLocaleString()}` : '未設定';
+
+      content.innerHTML = `
+        <div style="margin-top: 10px;">
+          <div class="modal-img-container">${imgContentHtml}</div>
+          <div style="display:flex; gap:6px; margin-bottom:14px;">
+            <button class="btn-action" style="margin-top:0; flex:1;" onclick="document.getElementById('modalImageInput_${item.id}').click()">📷 画像を変更・追加</button>
+            ${item.img ? `<button class="btn-action" style="margin-top:0; flex:0.6; background:#fff1f5; color:#e11d48; border-color:#fecdd3;" onclick="removeModalImage(${item.id})">画像を削除</button>` : ''}
+          </div>
+          <input type="file" id="modalImageInput_${item.id}" accept="image/*" style="display:none;" onchange="updateModalImage(event, ${item.id})">
+        </div>
+
+        <div style="font-size:0.7rem; color:var(--text-sub); font-weight:bold; text-transform:uppercase;">${item.brand || 'No Brand'}</div>
+        <h2 style="font-size:1.15rem; margin-bottom:10px; color:var(--text-main);">${item.name}</h2>
+        
+        <div class="modal-detail-row"><span class="modal-label">カテゴリー:</span> ${item.category}</div>
+        <div class="modal-detail-row"><span class="modal-label">金額:</span> ${priceText}</div>
+        <div class="modal-detail-row"><span class="modal-label">ハッシュタグ:</span> ${tagsHtml}</div>
+        
+        <!-- 今使ってる（個数＆期限＆＋ー） -->
+        <div class="modal-detail-row" style="background:#f4fbf7; padding:8px 10px; border-radius:12px; border:1px solid #a7f3d0; margin-top:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span class="modal-label" style="color:#10b981;">✨ 今使ってる分</span>
+            <div style="display:flex; gap:4px;">
+              <button style="background:white; border:1px solid #10b981; color:#10b981; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'using', -1)">-</button>
+              <button style="background:white; border:1px solid #10b981; color:#10b981; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'using', 1)">+</button>
+            </div>
+          </div>
+          <div style="font-size:0.8rem;">個数: <b>${item.usingCount || 0} 個</b></div>
+          <div style="font-size:0.8rem;">期限: ${expInfo}</div>
+        </div>
+
+        <!-- 未開封ストック（個数＆期限＆＋ー） -->
+        <div class="modal-detail-row" style="background:#fff5f8; padding:8px 10px; border-radius:12px; border:1px solid #fecdd3; margin-top:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span class="modal-label" style="color:#e11d48;">📦 未開封ストック</span>
+            <div style="display:flex; gap:4px;">
+              <button style="background:white; border:1px solid #e11d48; color:#e11d48; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'stock', -1)">-</button>
+              <button style="background:white; border:1px solid #e11d48; color:#e11d48; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'stock', 1)">+</button>
+            </div>
+          </div>
+          <div style="font-size:0.8rem;">個数: <b>${item.stockCount || 0} 個</b></div>
+          <div style="font-size:0.8rem;">期限: ${stockExpInfo}</div>
+        </div>
+
+        <!-- 使い切り回数（±ボタン付き） -->
+        <div class="modal-detail-row" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+          <div><span class="modal-label">使い切り回数:</span> <span style="font-weight:bold; color:var(--accent);">${item.finishedCount || 0} 回</span>（${avgRatingText}）</div>
+          <div style="display:flex; gap:4px;">
+            <button style="background:var(--primary-soft); border:1px solid var(--primary); color:var(--accent); width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'finished', -1)">-</button>
+            <button style="background:var(--primary-soft); border:1px solid var(--primary); color:var(--accent); width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'finished', 1)">+</button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <div style="flex:1;" class="modal-detail-row"><span class="modal-label">買うものリスト:</span> ${item.isBuy ? '入っている' : 'なし'}</div>
+          <div style="flex:1;" class="modal-detail-row"><span class="modal-label">欲しいものリスト:</span> ${item.isWishlist ? '入っている' : 'なし'}</div>
+        </div>
+
+        <div class="modal-detail-row" style="margin-top:6px;">
+          <span class="modal-label">メモ:</span><br>
+          <div style="background:#fff5f8; padding:10px; border-radius:12px; border:1px solid var(--border); margin-top:4px; font-size:0.82rem; white-space:pre-wrap;">${item.notes || 'メモなし'}</div>
+        </div>
+
+        ${(item.usingCount || 0) > 0 ? `<button class="btn-action" style="background:#fff1f5; color:#e11d48; border-color:#fecdd3;" onclick="openFinishRatingModal(${item.id})">🎉 1個使い切った！（評価して記録）</button>` : ''}
+        
+        <!-- リスト追加・解除ボタン -->
+        <div style="display:flex; gap:6px; margin-top:8px;">
+          ${item.isBuy ? 
+            `<button class="btn-action" style="background:#f4f4f5; color:var(--text-sub); border-color:var(--border); margin-top:0; flex:1;" onclick="toggleFlagFromModal(${item.id}, 'buy')">🛒 買うものから外す</button>` : 
+            `<button class="btn-action" style="background:#fef3c7; color:#d97706; border-color:#fde68a; margin-top:0; flex:1;" onclick="toggleFlagFromModal(${item.id}, 'buy')">🛒 買うものに追加</button>`
+          }
+          ${item.isWishlist ? 
+            `<button class="btn-action" style="background:#f4f4f5; color:var(--text-sub); border-color:var(--border); margin-top:0; flex:1;" onclick="toggleFlagFromModal(${item.id}, 'wishlist')">🪄 欲しいものから外す</button>` : 
+            `<button class="btn-action" style="background:#eff6ff; color:#3b82f6; border-color:#bfdbfe; margin-top:0; flex:1;" onclick="toggleFlagFromModal(${item.id}, 'wishlist')">🪄 欲しいものに追加</button>`
+          }
+        </div>
+
+        <button class="btn-action" style="background:var(--primary-soft); color:var(--accent); border-color:var(--primary); margin-top:8px;" onclick="openEditModal(${item.id})">✏️ 商品情報を編集する</button>
+        <button class="btn-delete" onclick="promptDeleteItem(${item.id})">商品を削除する</button>
+      `;
+
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    // 編集モーダルを開く
+    let editingItemTags = [];
+    function openEditModal(id) {
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+      editingItemTags = [...(item.tags || [])];
+
+      const content = document.getElementById('modalContent');
+      const imgContentHtml = item.img ? `<img src="${item.img}" class="modal-img">` : `<div style="font-size:3rem;">🎀</div>`;
+
+      content.innerHTML = `
+        <div style="margin-top: 10px;">
+          <div class="modal-img-container">${imgContentHtml}</div>
+          <div style="display:flex; gap:6px; margin-bottom:14px;">
+            <button class="btn-action" style="margin-top:0; flex:1;" onclick="document.getElementById('modalImageInput_${item.id}').click()">📷 画像を変更</button>
+            ${item.img ? `<button class="btn-action" style="margin-top:0; flex:0.6; background:#fff1f5; color:#e11d48; border-color:#fecdd3;" onclick="removeModalImage(${item.id})">画像を削除</button>` : ''}
+          </div>
+          <input type="file" id="modalImageInput_${item.id}" accept="image/*" style="display:none;" onchange="updateModalImage(event, ${item.id})">
+        </div>
+
+        <h2 style="font-size:1.1rem; margin-bottom:14px; color:var(--accent);">✏️ 商品情報の編集</h2>
+
+        <div class="form-grid" style="margin-bottom:12px;">
+          <div class="form-group">
+            <label>ブランド名</label>
+            <input type="text" id="editBrand_${item.id}" value="${item.brand || ''}">
+          </div>
+          <div class="form-group">
+            <label>商品名 *</label>
+            <input type="text" id="editName_${item.id}" value="${item.name || ''}">
+          </div>
+          <div class="form-group">
+            <label>カテゴリー</label>
+            <select id="editCategory_${item.id}">
+              ${categories.map(c => `<option value="${c}" ${c === item.category ? 'selected' : ''}>${c}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>金額（円）</label>
+            <input type="number" id="editPrice_${item.id}" value="${item.price || ''}" min="0">
+          </div>
+          <div class="form-group">
+            <label>今使ってる期限</label>
+            <input type="date" id="editExpire_${item.id}" value="${item.expireDate || ''}">
+          </div>
+          <div class="form-group">
+            <label>ストック期限</label>
+            <input type="date" id="editStockExpire_${item.id}" value="${item.stockExpireDate || ''}">
+          </div>
+          <div class="form-group">
+            <label>今使ってる個数</label>
+            <input type="number" id="editUsingCount_${item.id}" value="${item.usingCount || 0}" min="0">
+          </div>
+          <div class="form-group">
+            <label>ストック個数</label>
+            <input type="number" id="editStockCount_${item.id}" value="${item.stockCount || 0}" min="0">
+          </div>
+          <div class="form-group full">
+            <label>ハッシュタグ（追加・削除）</label>
+            <div style="display:flex; gap:6px; margin-bottom:4px;">
+              <input type="text" id="editTagInput_${item.id}" placeholder="タグ名を入力して追加" onkeydown="if(event.key==='Enter'){event.preventDefault(); addEditTag(${item.id});}">
+              <button style="background:var(--accent); color:white; border:none; padding:0 14px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="addEditTag(${item.id})">追加</button>
+            </div>
+            <div class="selected-tags-box" id="editTagsBox_${item.id}">
+              ${editingItemTags.map((t, tIdx) => `<div class="tag-chip">#${t} <span onclick="removeEditTag(${item.id}, ${tIdx})">×</span></div>`).join('')}
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>メモ</label>
+            <textarea id="editNotes_${item.id}">${item.notes || ''}</textarea>
+          </div>
+        </div>
+
+        <button class="btn-submit" onclick="saveEditedItem(${item.id})">変更を保存する</button>
+        <button class="btn-action" style="background:#f4f4f5; color:var(--text-sub); border-color:var(--border);" onclick="openModal(${item.id})">キャンセルして戻る</button>
+      `;
+    }
+
+    function addEditTag(id) {
+      const input = document.getElementById(`editTagInput_${id}`);
+      const val = input.value.trim().replace(/^#/, '');
+      if (val && !editingItemTags.includes(val)) {
+        editingItemTags.push(val);
+        input.value = '';
+        renderEditTagsBox(id);
+      }
+    }
+
+    function removeEditTag(id, tIdx) {
+      editingItemTags.splice(tIdx, 1);
+      renderEditTagsBox(id);
+    }
+
+    function renderEditTagsBox(id) {
+      const box = document.getElementById(`editTagsBox_${id}`);
+      if (!box) return;
+      box.innerHTML = editingItemTags.map((t, tIdx) => `<div class="tag-chip">#${t} <span onclick="removeEditTag(${id}, ${tIdx})">×</span></div>`).join('');
+    }
+
+    function saveEditedItem(id) {
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+
+      const name = document.getElementById(`editName_${id}`).value.trim();
+      if (!name) { alert('商品名を入力してください'); return; }
+
+      item.brand = document.getElementById(`editBrand_${id}`).value.trim();
+      item.name = name;
+      item.category = document.getElementById(`editCategory_${id}`).value;
+      item.price = parseInt(document.getElementById(`editPrice_${id}`).value) || 0;
+      item.expireDate = document.getElementById(`editExpire_${id}`).value;
+      item.stockExpireDate = document.getElementById(`editStockExpire_${id}`).value;
+      item.usingCount = parseInt(document.getElementById(`editUsingCount_${id}`).value) || 0;
+      item.stockCount = parseInt(document.getElementById(`editStockCount_${id}`).value) || 0;
+      item.notes = document.getElementById(`editNotes_${id}`).value.trim();
+      item.tags = [...editingItemTags];
+
+      item.tags.forEach(t => { if (!allTags.includes(t)) allTags.push(t); });
+
+      saveData();
+      updateBrandDatalist();
+      updateTagDatalist();
+      openModal(id);
+      render();
+      alert('商品情報を更新しました！✨');
+    }
+
+    function updateModalImage(e, id) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const item = items.find(i => i.id === id);
+          if (item) { item.img = evt.target.result; saveData(); openModal(id); render(); }
         };
+        reader.readAsDataURL(file);
+      }
+    }
+    function removeModalImage(id) {
+      const item = items.find(i => i.id === id);
+      if (item) { item.img = ''; saveData(); openModal(id); render(); }
+    }
+    function closeModalDirect() { document.getElementById('modalOverlay').style.display = 'none'; }
+    function closeModal(e) { if (e.target.id === 'modalOverlay') closeModalDirect(); }
 
-        // 新規登録ボタンの処理
-        window.handleRegister = async function() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                alert('メールアドレスとパスワードを入力してください。');
-                return;
-            }
-
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-            } catch (error) {
-                alert('新規登録に失敗しました: ' + error.message);
-            }
-        };
-
-        // ログアウト処理
-        window.handleLogout = async function() {
-            await signOut(auth);
-        };
-    </script>
+    function promptDeleteItem(id) {
+      const dialog = document.getElementById('dialogOverlay');
+      const confirmBtn = document.getElementById('dialogConfirmBtn');
+      dialog.style.display = 'flex';
+      confirmBtn.onclick = () => {
+        items = items.filter(i => i.id !== id);
+        saveData();
+        closeDialog();
+        closeModalDirect();
+        render();
+      };
+    }
+    function closeDialog() { document.getElementById('dialogOverlay').style.display = 'none'; }
+  </script>
 </body>
 </html>
