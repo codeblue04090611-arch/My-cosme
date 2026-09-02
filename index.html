@@ -425,9 +425,10 @@
   <!-- 1. ログイン / 新規登録画面 -->
   <div id="loginScreen">
     <div class="login-box">
-      <!-- ログイン画面のハートをホーム画面と完全に同じ形の ♥ に統一 -->
-      <div id="authHeaderTitle" style="font-family: 'Georgia', serif; font-style: italic; font-size: 2rem; color: #9e828d; margin-bottom: 2px;">
-        My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="font-size: 1.2rem; color: var(--primary); vertical-align: middle; margin-left: -2px;">♥</span>
+      <div id="authHeaderTitle" class="app-logo" style="justify-content: center; margin-bottom: 2px;">
+        <span class="logo-my">My</span>
+        <span class="logo-cosme">cosme</span>
+        <span class="logo-heart">♥</span>
       </div>
       <p id="authSubTitle" style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 20px;">メールアドレスでログインして、データを同期しよう</p>
       
@@ -751,6 +752,7 @@
   messagingSenderId: "863803729557",
   appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
 };
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
@@ -783,6 +785,7 @@
 
       if (isRegisterMode) {
         headerTitle.innerHTML = `新規アカウント登録`;
+        headerTitle.className = "";
         headerTitle.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
         headerTitle.style.fontStyle = "normal";
         headerTitle.style.fontWeight = "bold";
@@ -793,11 +796,16 @@
         actionBtn.textContent = "登録して始める";
         toggleLink.textContent = "アカウントをお持ちの方（ログイン）";
       } else {
-        headerTitle.innerHTML = `My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="font-size: 1.2rem; color: var(--primary); vertical-align: middle; margin-left: -2px;">♥</span>`;
-        headerTitle.style.fontFamily = "'Georgia', serif";
-        headerTitle.style.fontStyle = "italic";
-        headerTitle.style.fontSize = "2rem";
-        headerTitle.style.color = "#9e828d";
+        headerTitle.className = "app-logo";
+        headerTitle.innerHTML = `
+          <span class="logo-my">My</span>
+          <span class="logo-cosme">cosme</span>
+          <span class="logo-heart">♥</span>
+        `;
+        headerTitle.style.fontFamily = "";
+        headerTitle.style.fontStyle = "";
+        headerTitle.style.fontSize = "";
+        headerTitle.style.color = "";
 
         subTitle.textContent = "メールアドレスでログインして、データを同期しよう";
         actionBtn.textContent = "ログインする";
