@@ -28,7 +28,7 @@
       padding: 24px 16px 110px;
     }
 
-    /* ログイン画面専用のスタイル */
+    /* ログイン画面 */
     #loginScreen {
       display: flex;
       justify-content: center;
@@ -306,7 +306,7 @@
     .badge-expire-near { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
     .badge-expire-over { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
 
-    /* ボトムナビ（5つ） */
+    /* ボトムナビ */
     .bottom-nav {
       position: fixed;
       bottom: 16px; left: 16px; right: 16px;
@@ -344,6 +344,14 @@
       padding: 14px 16px; border-radius: 16px; font-weight: bold; font-size: 0.95rem; cursor: pointer; background: #fffcfd; border: 1.5px solid var(--border); color: var(--text-main); display: flex; align-items: center; gap: 10px;
     }
     .menu-item:hover { background: var(--primary-soft); color: var(--accent); }
+
+    /* 設定モーダル（アプリらしい可愛いデザイン） */
+    .settings-modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px;
+    }
+    .settings-modal {
+      background: white; border-radius: 28px; width: 100%; max-width: 340px; padding: 24px; border: 2px solid var(--border); box-shadow: 0 20px 45px rgba(224, 109, 152, 0.2); text-align: center;
+    }
 
     /* モーダル共通 */
     .modal-overlay {
@@ -400,7 +408,7 @@
 </head>
 <body>
 
-  <!-- 1. ログイン画面（画像通りのレイアウト） -->
+  <!-- 1. ログイン画面（メールアドレスは完全空欄） -->
   <div id="loginScreen">
     <div class="login-box">
       <div style="font-family: 'Georgia', serif; font-style: italic; font-size: 2rem; color: #9e828d; margin-bottom: 2px;">My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="color: #f7a8c4; font-size: 1.2rem;">♥</span></div>
@@ -409,7 +417,7 @@
       <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
         <div>
           <label>メールアドレス</label>
-          <input type="email" id="loginEmail" placeholder="メールアドレス" value="codeblue04090611@gmail.com" style="margin-top: 4px;">
+          <input type="email" id="loginEmail" placeholder="メールアドレスを入力" style="margin-top: 4px;">
         </div>
         <div>
           <label>パスワード</label>
@@ -437,7 +445,8 @@
           <span class="logo-cosme">cosme</span>
           <span class="logo-heart">♥</span>
         </div>
-        <div class="menu-icon-btn" onclick="handleLogout()" title="ログアウト" style="font-size: 0.9rem;">🚪</div>
+        <!-- 右端上は設定ボタンに変更 -->
+        <div class="menu-icon-btn" onclick="openSettingsModal()" title="設定" style="font-size: 1.1rem;">⚙️</div>
       </div>
 
       <!-- 検索バー -->
@@ -560,7 +569,7 @@
           <span class="logo-my">favorite</span>
           <span class="logo-cosme">log</span>
         </div>
-        <div style="width: 40px;"></div>
+        <div class="menu-icon-btn" onclick="openSettingsModal()" title="設定" style="font-size: 1.1rem;">⚙️</div>
       </div>
 
       <div class="form-card">
@@ -618,7 +627,7 @@
 
   </div>
 
-  <!-- サイドメニュー -->
+  <!-- サイドメニュー（ログアウトを削除してスッキリ） -->
   <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu(event)">
     <div class="side-menu" onclick="event.stopPropagation()">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -634,8 +643,27 @@
       <div class="menu-item" onclick="showExpireTab(); closeSideMenuDirect();">
         <span>⏰</span> 期限チェック
       </div>
-      <div class="menu-item" onclick="handleLogout(); closeSideMenuDirect();" style="color: #e11d48; border-color: #fecdd3; background: #fff1f5;">
-        <span>🚪</span> ログアウト
+    </div>
+  </div>
+
+  <!-- 右上の設定（⚙️）を押したときに出てくる可愛いポップアップ -->
+  <div class="settings-modal-overlay" id="settingsModalOverlay" onclick="closeSettingsModal(event)">
+    <div class="settings-modal" onclick="event.stopPropagation()">
+      <h3 style="color:var(--accent); font-size:1.1rem; margin-bottom:12px;">⚙️ 設定</h3>
+      <p style="font-size:0.82rem; color:var(--text-sub); margin-bottom:20px;">アカウントの管理</p>
+      <button onclick="promptLogout()" style="width:100%; background:#fff1f5; color:#e11d48; border:1.5px solid #fecdd3; padding:12px; border-radius:16px; font-weight:bold; cursor:pointer; font-size:0.9rem; margin-bottom:10px;">🚪 ログアウトする</button>
+      <button onclick="closeSettingsModalDirect()" style="width:100%; background:#f4f4f5; color:var(--text-sub); border:none; padding:11px; border-radius:16px; font-weight:bold; cursor:pointer; font-size:0.85rem;">閉じる</button>
+    </div>
+  </div>
+
+  <!-- アプリらしい可愛い「ログアウトしますか？」確認ダイアログ -->
+  <div class="dialog-overlay" id="logoutDialogOverlay">
+    <div class="dialog-box">
+      <h3 style="color:var(--accent); font-size:1.05rem; margin-bottom:8px;">🚪 ログアウト</h3>
+      <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom:4px;">ログアウトしますか？</p>
+      <div class="dialog-buttons">
+        <button class="dialog-btn dialog-btn-cancel" onclick="closeLogoutDialog()">いいえ</button>
+        <button class="dialog-btn dialog-btn-confirm" onclick="executeLogout()" style="background:linear-gradient(135deg, #f7a8c4, #e06d98);">はい</button>
       </div>
     </div>
   </div>
@@ -744,8 +772,29 @@
       }
     };
 
-    window.handleLogout = async function() {
-      // 確認なしでサクッとログアウトするようにしたよ
+    // 設定モーダルの開閉
+    window.openSettingsModal = function() {
+      document.getElementById('settingsModalOverlay').style.display = 'flex';
+    };
+    window.closeSettingsModalDirect = function() {
+      document.getElementById('settingsModalOverlay').style.display = 'none';
+    };
+    window.closeSettingsModal = function(e) {
+      if (e.target.id === 'settingsModalOverlay') closeSettingsModalDirect();
+    };
+
+    // ログアウト確認ダイアログ
+    window.promptLogout = function() {
+      closeSettingsModalDirect();
+      document.getElementById('logoutDialogOverlay').style.display = 'flex';
+    };
+    window.closeLogoutDialog = function() {
+      document.getElementById('logoutDialogOverlay').style.display = 'none';
+    };
+
+    // 実際のログアウト実行
+    window.executeLogout = async function() {
+      closeLogoutDialog();
       await signOut(auth);
     };
   </script>
