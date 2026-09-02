@@ -201,6 +201,7 @@
       display: flex;
       align-items: center;
       width: 100%;
+      box-sizing: border-box;
     }
     .date-input-wrapper input[type="date"] {
       appearance: none;
@@ -1113,7 +1114,6 @@
       });
     }
 
-    // 画像を軽く圧縮して高速化する関数
     function previewImage(input) {
       const file = input.files[0];
       if (file) {
@@ -1778,16 +1778,15 @@
             </select>
           </div>
           <div class="form-group">
-            <label>金額（円）</label>
-            <input type="number" id="editPrice_${item.id}" value="${item.price || ''}" min="0">
+            <label>金額</label>
+            <input type="number" id="editPrice_${item.id}" value="${item.price || ''}" min="0" placeholder="例: 1500">
           </div>
           <div class="form-group">
-            <label>今使ってる期限</label>
-            <input type="date" id="editExpire_${item.id}" value="${item.expireDate || ''}">
-          </div>
-          <div class="form-group">
-            <label>ストック期限</label>
-            <input type="date" id="editStockExpire_${item.id}" value="${item.stockExpireDate || ''}">
+            <label>使用期限</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="editExpire_${item.id}" value="${item.expireDate || ''}">
+              <span class="calendar-icon-overlay">📅</span>
+            </div>
           </div>
           <div class="form-group">
             <label>今使ってる個数</label>
@@ -1797,10 +1796,17 @@
             <label>ストック個数</label>
             <input type="number" id="editStockCount_${item.id}" value="${item.stockCount || 0}" min="0">
           </div>
+          <div class="form-group">
+            <label>ストック期限</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="editStockExpire_${item.id}" value="${item.stockExpireDate || ''}">
+              <span class="calendar-icon-overlay">📅</span>
+            </div>
+          </div>
           <div class="form-group full">
-            <label>ハッシュタグ（追加・削除）</label>
+            <label>ハッシュタグ</label>
             <div style="display:flex; gap:6px; margin-bottom:4px;">
-              <input type="text" id="editTagInput_${item.id}" placeholder="タグ名を入力して追加" onkeydown="if(event.key==='Enter'){event.preventDefault(); addEditTag(${item.id});}">
+              <input type="text" id="editTagInput_${item.id}" placeholder="文字を入力して選択" onkeydown="if(event.key==='Enter'){event.preventDefault(); addEditTag(${item.id});}">
               <button style="background:var(--accent); color:white; border:none; padding:0 14px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="addEditTag(${item.id})">追加</button>
             </div>
             <div class="selected-tags-box" id="editTagsBox_${item.id}">
@@ -1809,7 +1815,7 @@
           </div>
           <div class="form-group full">
             <label>メモ</label>
-            <textarea id="editNotes_${item.id}">${item.notes || ''}</textarea>
+            <textarea id="editNotes_${item.id}" placeholder="メモを入力">${item.notes || ''}</textarea>
           </div>
         </div>
 
@@ -1872,8 +1878,36 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = function(evt) {
-          const item = items.find(i => i.id === id);
-          if (item) { item.img = evt.target.result; saveData(); openModal(id); render(); }
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 400;
+            const MAX_HEIGHT = 400;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            const item = items.find(i => i.id === id);
+            if (item) { item.img = compressedBase64; saveData(); openModal(id); render(); }
+          };
+          img.src = evt.target.result;
         };
         reader.readAsDataURL(file);
       }
