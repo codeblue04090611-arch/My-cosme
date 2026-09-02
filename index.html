@@ -128,7 +128,7 @@
       box-shadow: 0 4px 15px rgba(224, 109, 152, 0.06);
     }
     .search-bar-box input {
-      border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: var(--text-main);
+      border: none; background: transparent; outline: none; width: 100%; font-size: 16px; color: var(--text-main);
     }
 
     .form-card {
@@ -163,7 +163,7 @@
       padding: 11px 14px;
       border: 1.5px solid var(--border);
       border-radius: 14px;
-      font-size: 0.85rem;
+      font-size: 16px;
       outline: none;
       background: #fffcfd;
       color: var(--text-main);
@@ -177,7 +177,7 @@
       padding: 11px 14px;
       border: 1.5px solid var(--border);
       border-radius: 14px;
-      font-size: 0.85rem;
+      font-size: 16px;
       background: #fffcfd;
       color: var(--text-main);
       width: 100%;
@@ -222,19 +222,20 @@
       border: 2px dashed var(--primary);
       background: var(--primary-soft);
       border-radius: 14px;
-      padding: 4px;
+      padding: 8px;
       text-align: center;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 45px;
+      gap: 8px;
+      height: 52px;
       overflow: hidden;
       transition: background 0.2s;
       width: 100%;
     }
     .image-picker-preview {
-      width: 35px; height: 35px; object-fit: cover; border-radius: 8px; display: none;
+      width: 38px; height: 38px; object-fit: cover; border-radius: 8px; display: none;
     }
 
     .btn-submit {
@@ -246,7 +247,7 @@
       border-radius: 20px;
       font-weight: bold;
       cursor: pointer;
-      font-size: 0.95rem;
+      font-size: 1rem;
       box-shadow: 0 6px 15px rgba(224, 109, 152, 0.3);
       margin-top: 10px;
       transition: opacity 0.2s, transform 0.1s;
@@ -431,7 +432,7 @@
           <input type="password" id="loginPassword" placeholder="パスワード（6文字以上）" style="margin-top: 4px;">
         </div>
         
-        <button id="authActionBtn" onclick="handleAuthAction()" style="width:100%; background:linear-gradient(135deg, #f7a8c4, #e06d98); color:white; border:none; padding:13px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:0.95rem; box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3); margin-top: 6px;">ログインする</button>
+        <button id="authActionBtn" onclick="handleAuthAction()" style="width:100%; background:linear-gradient(135deg, #f7a8c4, #e06d98); color:white; border:none; padding:13px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:1rem; box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3); margin-top: 6px;">ログインする</button>
         
         <div style="text-align: center; margin-top: 10px;">
           <a href="#" id="authToggleLink" onclick="toggleAuthMode(); return false;" style="font-size: 0.8rem; color: var(--text-sub); text-decoration: none;">アカウントをお持ちでない方（新規登録）</a>
@@ -458,11 +459,12 @@
         <input type="text" id="searchInput" placeholder="ブランド名、商品名、#タグで検索..." oninput="render()">
       </div>
 
-      <!-- 商品登録フォーム -->
+      <!-- 商品登録フォーム（スケッチ通りの並び順） -->
       <div class="form-card" id="formCardSection">
-        <div class="form-title">新しいコスメを登録</div>
+        <div class="form-title">コスメ登録</div>
 
         <div class="form-grid">
+          <!-- 1行目: ブランド名 / 商品名 -->
           <div class="form-group">
             <label>ブランド名</label>
             <input type="text" id="brand" list="brandList" onfocus="updateBrandDatalist()">
@@ -472,6 +474,8 @@
             <label>商品名 *</label>
             <input type="text" id="name" required>
           </div>
+
+          <!-- 2行目: カテゴリー / 状態 -->
           <div class="form-group">
             <label>カテゴリー</label>
             <div class="select-picker-trigger" id="categorySelectTrigger" onclick="openCenterModal('category')">リップ</div>
@@ -481,20 +485,12 @@
             <div class="select-picker-trigger" id="statusSelectTrigger" onclick="openCenterModal('status')">今使ってる</div>
           </div>
 
+          <!-- 3行目: 金額 / 使用期限 -->
           <div class="form-group">
-            <label>金額（円）</label>
+            <label>金額</label>
             <input type="number" id="priceInput" placeholder="例: 1500" min="0">
           </div>
           <div class="form-group">
-            <label>画像</label>
-            <div class="image-picker-box" onclick="document.getElementById('imageInput').click()">
-              <img id="imagePreview" class="image-picker-preview" alt="">
-              <span id="uploadPlaceholder" style="font-size:1rem;">📷 画像を選択</span>
-            </div>
-            <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
-          </div>
-
-          <div class="form-group full">
             <label id="formExpireLabel">使用期限</label>
             <div class="date-input-wrapper">
               <input type="date" id="expireDate">
@@ -502,19 +498,32 @@
             </div>
           </div>
 
+          <!-- 画像選択 (横長フル幅) -->
           <div class="form-group full">
-            <label>ハッシュタグ（効能・成分など）</label>
+            <label>画像</label>
+            <div class="image-picker-box" onclick="document.getElementById('imageInput').click()">
+              <img id="imagePreview" class="image-picker-preview" alt="">
+              <span id="uploadPlaceholder" style="font-size:0.9rem; font-weight:bold; color:var(--accent);">📷 画像を選択</span>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
+          </div>
+
+          <!-- ハッシュタグ -->
+          <div class="form-group full">
+            <label>ハッシュタグ</label>
             <input type="text" id="tagInput" list="tagList" placeholder="文字を入力して選択" oninput="handleTagInput(event)">
             <datalist id="tagList"></datalist>
             <div class="selected-tags-box" id="selectedTagsBox"></div>
           </div>
+
+          <!-- メモ -->
           <div class="form-group full">
-            <label>メモ（カラー番号など）</label>
+            <label>メモ</label>
             <textarea id="notes" placeholder="メモを入力"></textarea>
           </div>
         </div>
 
-        <button class="btn-submit" onclick="addItem()">コスメを登録・更新する</button>
+        <button class="btn-submit" onclick="addItem()">コスメを登録</button>
       </div>
 
       <div class="summary-scroll" id="summaryGrid"></div>
@@ -702,7 +711,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    const firebaseConfig = {
+    const firebaseConfig ={
     apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
     authDomain: "my-cosme.firebaseapp.com",
     projectId: "my-cosme",
