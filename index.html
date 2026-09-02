@@ -26,6 +26,7 @@
       max-width: 500px;
       margin: 0 auto;
       padding: 24px 16px 110px;
+      overflow-x: hidden;
     }
 
     /* ログイン・新規登録画面 */
@@ -47,7 +48,6 @@
       border: 2px solid var(--border);
     }
 
-    /* エラーメッセージ用 */
     .auth-error-msg {
       background: #fff1f5;
       color: #e11d48;
@@ -142,6 +142,7 @@
       margin-bottom: 24px;
       border: 2px solid var(--border);
       box-shadow: var(--shadow);
+      width: 100%;
     }
     .form-title {
       font-weight: bold;
@@ -158,7 +159,7 @@
       gap: 12px;
       margin-bottom: 10px;
     }
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
     .form-group.full { grid-column: span 2; }
     label { font-size: 0.72rem; font-weight: bold; color: var(--text-sub); }
     
@@ -196,7 +197,6 @@
       color: var(--text-sub);
     }
 
-    /* 日付ピッカー */
     .date-input-wrapper {
       position: relative;
       display: flex;
@@ -214,7 +214,6 @@
       font-size: 0.95rem;
     }
 
-    /* チップリスト */
     .selected-tags-box {
       display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
     }
@@ -223,7 +222,6 @@
     }
     .tag-chip span { cursor: pointer; }
 
-    /* 画像アップロード */
     .image-picker-box {
       border: 2px dashed var(--primary);
       background: var(--primary-soft);
@@ -258,7 +256,6 @@
     }
     .btn-submit:active { transform: scale(0.98); }
 
-    /* サマリー横スクロール */
     .summary-scroll {
       display: flex;
       gap: 8px;
@@ -288,7 +285,6 @@
       box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3);
     }
 
-    /* アイテム一覧 */
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .item-card {
       background: var(--card-bg);
@@ -400,9 +396,10 @@
       background: white; border-radius: 28px; width: 100%; max-width: 360px; max-height: 80vh; overflow-y: auto; padding: 22px; border: 2px solid var(--border); box-shadow: 0 20px 45px rgba(224, 109, 152, 0.2);
     }
     .sort-list-item {
-      display: flex; justify-content: space-between; align-items: center; background: #fffcfd; border: 1.5px solid var(--border); padding: 12px 14px; border-radius: 14px; margin-bottom: 8px; cursor: grab; user-select: none; touch-action: none;
+      display: flex; justify-content: space-between; align-items: center; background: #fffcfd; border: 1.5px solid var(--border); padding: 12px 14px; border-radius: 14px; margin-bottom: 8px; user-select: none;
     }
-    .drag-handle { color: var(--accent); font-weight: bold; margin-right: 10px; }
+    .drag-handle { color: var(--accent); font-weight: bold; margin-right: 10px; cursor: grab; padding: 4px; touch-action: none; }
+    .sort-list-item.dragging { opacity: 0.4; }
 
     /* 削除ダイアログ */
     .dialog-overlay {
@@ -428,11 +425,10 @@
       <div id="authHeaderTitle" class="app-logo" style="justify-content: center; margin-bottom: 2px;">
         <span class="logo-my">My</span>
         <span class="logo-cosme">cosme</span>
-        <span class="logo-heart">♥</span>
+        <span class="logo-heart">🩷</span>
       </div>
       <p id="authSubTitle" style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 20px;">メールアドレスでログインして、データを同期しよう</p>
       
-      <!-- エラーメッセージ表示エリア -->
       <div id="authErrorMsg" class="auth-error-msg"></div>
 
       <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
@@ -464,7 +460,7 @@
         <div class="app-logo">
           <span class="logo-my">My</span>
           <span class="logo-cosme">cosme</span>
-          <span class="logo-heart">♥</span>
+          <span class="logo-heart">🩷</span>
         </div>
         <div class="menu-icon-btn" onclick="openSettingsModal()" title="設定" style="font-size: 1.1rem;">⚙️</div>
       </div>
@@ -593,7 +589,7 @@
       </div>
 
       <div class="form-card">
-        <div class="form-title">♥ 新しい favorite log を記録</div>
+        <div class="form-title">🩷 新しい favorite log を記録</div>
         <div class="form-grid">
           <div class="form-group">
             <label>カテゴリー</label>
@@ -658,7 +654,7 @@
         <span>🏠</span> HOME
       </div>
       <div class="menu-item" onclick="showRoutineView(); closeSideMenuDirect();">
-        <span>♥</span> favorite log
+        <span>🩷</span> favorite log
       </div>
       <div class="menu-item" onclick="showExpireTab(); closeSideMenuDirect();">
         <span>⏰</span> 期限チェック
@@ -761,7 +757,6 @@
 
     let isRegisterMode = false;
 
-    // エラーメッセージを表示する関数
     function showAuthError(msg) {
       const errBox = document.getElementById('authErrorMsg');
       errBox.textContent = msg;
@@ -774,7 +769,6 @@
       errBox.style.display = 'none';
     }
 
-    // 画面の切り替え（ログイン ⇄ 新規アカウント登録）
     window.toggleAuthMode = function() {
       isRegisterMode = !isRegisterMode;
       clearAuthError();
@@ -800,7 +794,7 @@
         headerTitle.innerHTML = `
           <span class="logo-my">My</span>
           <span class="logo-cosme">cosme</span>
-          <span class="logo-heart">♥</span>
+          <span class="logo-heart">🩷</span>
         `;
         headerTitle.style.fontFamily = "";
         headerTitle.style.fontStyle = "";
@@ -813,7 +807,6 @@
       }
     };
 
-    // 認証ボタンを押したときの処理
     window.handleAuthAction = async function() {
       clearAuthError();
       const email = document.getElementById('loginEmail').value.trim();
@@ -856,7 +849,6 @@
       }
     });
 
-    // 設定モーダルの開閉
     window.openSettingsModal = function() {
       document.getElementById('settingsModalOverlay').style.display = 'flex';
     };
@@ -867,7 +859,6 @@
       if (e.target.id === 'settingsModalOverlay') closeSettingsModalDirect();
     };
 
-    // ログアウト確認ダイアログ
     window.promptLogout = function() {
       closeSettingsModalDirect();
       document.getElementById('logoutDialogOverlay').style.display = 'flex';
@@ -876,7 +867,6 @@
       document.getElementById('logoutDialogOverlay').style.display = 'none';
     };
 
-    // 実際のログアウト実行
     window.executeLogout = async function() {
       closeLogoutDialog();
       await signOut(auth);
@@ -1196,30 +1186,31 @@
         const labelText = typeof itemVal === 'string' ? itemVal : itemVal.label;
         const item = document.createElement('div');
         item.className = 'sort-list-item';
-        item.setAttribute('draggable', 'true');
         item.innerHTML = `
           <div style="display:flex; align-items:center; flex:1;" onclick="selectCenterItem('${labelText}')">
-            <span class="drag-handle">☰</span>
+            <span class="drag-handle" draggable="true">☰</span>
             <span style="font-weight:bold; font-size:0.85rem;">${labelText}</span>
           </div>
-          ${targetList.length > 1 ? `<button onclick="event.stopPropagation(); deleteCenterItem(${index})" style="background:none; border:none; cursor:pointer; color:#e11d48; font-size:0.75rem; font-weight:bold;">削除</button>` : ''}
+          ${targetList.length > 1 ? `<button onclick="event.stopPropagation(); deleteCenterItem(${index})" style="background:none; border:none; cursor:pointer; color:#e11d48; font-size:0.75rem; font-weight:bold; padding:4px;">削除</button>` : ''}
         `;
-        setupDragAndDropItem(item, index);
+        const handle = item.querySelector('.drag-handle');
+        setupDragAndDropHandle(handle, item, index);
         listContainer.appendChild(item);
       });
     }
 
-    function setupDragAndDropItem(item, index) {
+    function setupDragAndDropHandle(handle, item, index) {
       const listContainer = document.getElementById('centerModalList');
-      item.addEventListener('dragstart', (e) => {
+      
+      handle.addEventListener('dragstart', (e) => {
         item.classList.add('dragging');
         e.dataTransfer.setData('text/plain', index);
       });
-      item.addEventListener('dragend', () => {
+      handle.addEventListener('dragend', () => {
         item.classList.remove('dragging');
-        saveData();
-        renderCenterModalList();
+        updateArrayOrderFromDOM();
       });
+
       item.addEventListener('dragover', (e) => {
         e.preventDefault();
         const draggingItem = listContainer.querySelector('.dragging');
@@ -1228,27 +1219,30 @@
         const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
         if (next) listContainer.insertBefore(draggingItem, item.nextSibling);
         else listContainer.insertBefore(draggingItem, item);
-        updateArrayOrderFromDOM();
       });
 
-      item.addEventListener('touchstart', () => { item.classList.add('dragging'); }, {passive: true});
-      item.addEventListener('touchmove', (e) => {
+      let touchStartY = 0;
+      handle.addEventListener('touchstart', (e) => {
+        item.classList.add('dragging');
+        touchStartY = e.touches[0].clientY;
+      }, {passive: true});
+
+      handle.addEventListener('touchmove', (e) => {
         e.preventDefault();
-        const touchLocation = e.touches[0];
-        const target = document.elementFromPoint(touchLocation.clientX, touchLocation.clientY);
+        const touchY = e.touches[0].clientY;
+        const target = document.elementFromPoint(e.touches[0].clientX, touchY);
         const targetItem = target ? target.closest('.sort-list-item') : null;
         if (targetItem && targetItem !== item && targetItem.parentNode === listContainer) {
           const rect = targetItem.getBoundingClientRect();
-          const next = (touchLocation.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+          const next = (touchY - rect.top) / (rect.bottom - rect.top) > 0.5;
           if (next) listContainer.insertBefore(item, targetItem.nextSibling);
           else listContainer.insertBefore(item, targetItem);
-          updateArrayOrderFromDOM();
         }
       }, {passive: false});
-      item.addEventListener('touchend', () => {
+
+      handle.addEventListener('touchend', () => {
         item.classList.remove('dragging');
-        saveData();
-        renderCenterModalList();
+        updateArrayOrderFromDOM();
       });
     }
 
@@ -1367,6 +1361,18 @@
       let usingCount = parseInt(document.getElementById('usingCountInput').value) || 0;
       let stockCount = parseInt(document.getElementById('stockCountInput').value) || 0;
 
+      // 状態に応じた期限の振り分けロジック
+      let finalExpireDate = '';
+      let finalStockExpireDate = '';
+      if (status === 'using') {
+        finalExpireDate = expireDate;
+      } else if (status === 'stock') {
+        finalStockExpireDate = stockExpireDate;
+      } else {
+        finalExpireDate = expireDate;
+        finalStockExpireDate = stockExpireDate;
+      }
+
       const notes = document.getElementById('notes').value.trim();
       const tags = [...formTags];
 
@@ -1384,8 +1390,8 @@
 
         if (price > 0) existing.price = price;
         if (currentImageBase64) existing.img = currentImageBase64;
-        if (expireDate) existing.expireDate = expireDate;
-        if (stockExpireDate) existing.stockExpireDate = stockExpireDate;
+        if (finalExpireDate) existing.expireDate = finalExpireDate;
+        if (finalStockExpireDate) existing.stockExpireDate = finalStockExpireDate;
         if (notes) existing.notes = notes;
         existing.category = category;
         tags.forEach(t => { if (!existing.tags.includes(t)) existing.tags.push(t); });
@@ -1404,8 +1410,8 @@
           finishedCount: status === 'finished' ? 1 : 0,
           isBuy: isB,
           isWishlist: isW,
-          expireDate: expireDate,
-          stockExpireDate: stockExpireDate,
+          expireDate: finalExpireDate,
+          stockExpireDate: finalStockExpireDate,
           tags: tags,
           notes: notes,
           img: currentImageBase64,
@@ -1657,8 +1663,28 @@
 
       const priceText = (item.price !== undefined && item.price > 0) ? `¥${item.price.toLocaleString()}` : '未設定';
 
+      // 指定された構成・順番に整理：ブランド名、商品名、カテゴリー、状態、金額、使用期限、画像、ハッシュタグ、メモ
+      let statusStrs = [];
+      if ((item.usingCount || 0) > 0) statusStrs.push(`今使ってる (${item.usingCount}個)`);
+      if ((item.stockCount || 0) > 0) statusStrs.push(`ストック (${item.stockCount}個)`);
+      if (item.isBuy) statusStrs.push('買うもの');
+      if (item.isWishlist) statusStrs.push('欲しいもの');
+      if ((item.finishedCount || 0) > 0) statusStrs.push(`使い切り (${item.finishedCount}回)`);
+      const statusText = statusStrs.length > 0 ? statusStrs.join(', ') : 'なし';
+
+      const activeExpireText = (item.expireDate && (item.usingCount || 0) > 0) ? expInfo : ((item.stockExpireDate && (item.stockCount || 0) > 0) ? stockExpInfo : (item.expireDate || item.stockExpireDate || '未設定'));
+
       content.innerHTML = `
-        <div style="margin-top: 10px;">
+        <div style="font-size:0.7rem; color:var(--text-sub); font-weight:bold; text-transform:uppercase;">${item.brand || 'No Brand'}</div>
+        <h2 style="font-size:1.15rem; margin-bottom:10px; color:var(--text-main);">${item.name}</h2>
+        
+        <div class="modal-detail-row"><span class="modal-label">カテゴリー:</span> ${item.category}</div>
+        <div class="modal-detail-row"><span class="modal-label">状態:</span> ${statusText}</div>
+        <div class="modal-detail-row"><span class="modal-label">金額:</span> ${priceText}</div>
+        <div class="modal-detail-row"><span class="modal-label">使用期限:</span> ${activeExpireText}</div>
+        
+        <div style="margin: 12px 0;">
+          <div class="modal-label" style="margin-bottom:4px;">画像:</div>
           <div class="modal-img-container">${imgContentHtml}</div>
           <div style="display:flex; gap:6px; margin-bottom:14px;">
             <button class="btn-action" style="margin-top:0; flex:1;" onclick="document.getElementById('modalImageInput_${item.id}').click()">📷 画像を変更・追加</button>
@@ -1667,53 +1693,32 @@
           <input type="file" id="modalImageInput_${item.id}" accept="image/*" style="display:none;" onchange="updateModalImage(event, ${item.id})">
         </div>
 
-        <div style="font-size:0.7rem; color:var(--text-sub); font-weight:bold; text-transform:uppercase;">${item.brand || 'No Brand'}</div>
-        <h2 style="font-size:1.15rem; margin-bottom:10px; color:var(--text-main);">${item.name}</h2>
-        
-        <div class="modal-detail-row"><span class="modal-label">カテゴリー:</span> ${item.category}</div>
-        <div class="modal-detail-row"><span class="modal-label">金額:</span> ${priceText}</div>
         <div class="modal-detail-row"><span class="modal-label">ハッシュタグ:</span> ${tagsHtml}</div>
-        
-        <div class="modal-detail-row" style="background:#f4fbf7; padding:8px 10px; border-radius:12px; border:1px solid #a7f3d0; margin-top:8px;">
+        <div class="modal-detail-row" style="margin-top:6px;">
+          <span class="modal-label">メモ:</span><br>
+          <div style="background:#fff5f8; padding:10px; border-radius:12px; border:1px solid var(--border); margin-top:4px; font-size:0.82rem; white-space:pre-wrap;">${item.notes || 'メモなし'}</div>
+        </div>
+
+        <div style="background:#f4fbf7; padding:8px 10px; border-radius:12px; border:1px solid #a7f3d0; margin-top:8px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span class="modal-label" style="color:#10b981;">✨ 今使ってる分</span>
+            <span class="modal-label" style="color:#10b981;">✨ 今使ってる分 (個数調整)</span>
             <div style="display:flex; gap:4px;">
               <button style="background:white; border:1px solid #10b981; color:#10b981; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'using', -1)">-</button>
               <button style="background:white; border:1px solid #10b981; color:#10b981; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'using', 1)">+</button>
             </div>
           </div>
           <div style="font-size:0.8rem;">個数: <b>${item.usingCount || 0} 個</b></div>
-          <div style="font-size:0.8rem;">期限: ${expInfo}</div>
         </div>
 
-        <div class="modal-detail-row" style="background:#fff5f8; padding:8px 10px; border-radius:12px; border:1px solid #fecdd3; margin-top:6px;">
+        <div style="background:#fff5f8; padding:8px 10px; border-radius:12px; border:1px solid #fecdd3; margin-top:6px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span class="modal-label" style="color:#e11d48;">📦 未開封ストック</span>
+            <span class="modal-label" style="color:#e11d48;">📦 未開封ストック (個数調整)</span>
             <div style="display:flex; gap:4px;">
               <button style="background:white; border:1px solid #e11d48; color:#e11d48; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'stock', -1)">-</button>
               <button style="background:white; border:1px solid #e11d48; color:#e11d48; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'stock', 1)">+</button>
             </div>
           </div>
           <div style="font-size:0.8rem;">個数: <b>${item.stockCount || 0} 個</b></div>
-          <div style="font-size:0.8rem;">期限: ${stockExpInfo}</div>
-        </div>
-
-        <div class="modal-detail-row" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-          <div><span class="modal-label">使い切り回数:</span> <span style="font-weight:bold; color:var(--accent);">${item.finishedCount || 0} 回</span>（${avgRatingText}）</div>
-          <div style="display:flex; gap:4px;">
-            <button style="background:var(--primary-soft); border:1px solid var(--primary); color:var(--accent); width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'finished', -1)">-</button>
-            <button style="background:var(--primary-soft); border:1px solid var(--primary); color:var(--accent); width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'finished', 1)">+</button>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:8px; margin-top:10px;">
-          <div style="flex:1;" class="modal-detail-row"><span class="modal-label">買うものリスト:</span> ${item.isBuy ? '入っている' : 'なし'}</div>
-          <div style="flex:1;" class="modal-detail-row"><span class="modal-label">欲しいものリスト:</span> ${item.isWishlist ? '入っている' : 'なし'}</div>
-        </div>
-
-        <div class="modal-detail-row" style="margin-top:6px;">
-          <span class="modal-label">メモ:</span><br>
-          <div style="background:#fff5f8; padding:10px; border-radius:12px; border:1px solid var(--border); margin-top:4px; font-size:0.82rem; white-space:pre-wrap;">${item.notes || 'メモなし'}</div>
         </div>
 
         ${(item.usingCount || 0) > 0 ? `<button class="btn-action" style="background:#fff1f5; color:#e11d48; border-color:#fecdd3;" onclick="openFinishRatingModal(${item.id})">🎉 1個使い切った！（評価して記録）</button>` : ''}
