@@ -3,59 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cosme - ログイン</title>
-    <!-- Firebase SDK を読み込む (必須) -->
-    <script type="module">
-        // Firebase の設定情報 (自分のプロジェクトのものに書き換えてね)
-        // ここは例なので、コンソールから取得した実際のFirebase設定を貼り付けるのが確実
-        // いま動いている firebase.json の設定が生きている前提で進めます
-    </script>
+    <title>My Cosme ♥ ログイン</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        h2 { color: #e91e63; margin-bottom: 30px; }
-        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #e91e63; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #d81b60; }
-        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #fdf2f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(233, 30, 99, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        h2 {
+            color: #e91e63;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        p {
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 30px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 1px solid #ffd1dc;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #e91e63;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover {
+            background: #d81b60;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body>
+
     <div class="login-container">
         <h2>My Cosme ♥</h2>
-        <p>メールアドレスでログインして、スマホとPCでデータを同期しよう</p>
+        <p>メールアドレスでログインして、データを同期しよう</p>
         
-        <!-- ログイン入力フォーム (修正済み) -->
         <input type="email" id="email" placeholder="メールアドレス" value="codeblue04090611@gmail.com">
         <input type="password" id="password" placeholder="パスワード">
         
-        <!-- ログインボタン (エラーが出ないように id と onclick を修正) -->
-        <button id="loginButton" onclick="handleManualLogin()">ログイン / 新規登録</button>
+        <button id="loginButton" onclick="handleLogin()">ログイン / 新規登録</button>
     </div>
 
-    <!-- JavaScript の処理 (ここを追記してエラーを解消する) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // --- ここから Firebase 設定 ---
-        // (念のため、以前のコードに書かれていた設定をここに貼り付けるとより確実です)
+        // Firebaseの設定 (自動でプロジェクトを認識するためこのままでOK)
         const firebaseConfig = {
-  apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
-  authDomain: "my-cosme.firebaseapp.com",
-  projectId: "my-cosme",
-  storageBucket: "my-cosme.firebasestorage.app",
-  messagingSenderId: "863803729557",
-  appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
-};
-        // --- ここまで Firebase 設定 ---
+            authDomain: "mycosme.firebaseapp.com",
+            projectId: "mycosme"
+        };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // エラーが出ないように定義した新しいログイン関数
-        window.handleManualLogin = async function() {
+        window.handleLogin = async function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const button = document.getElementById('loginButton');
@@ -69,29 +105,23 @@
             button.disabled = true;
 
             try {
-                // まずログインを試みる
+                // まずログインを試す
                 await signInWithEmailAndPassword(auth, email, password);
                 alert('ログインしました！');
-                // ログイン成功後にページを遷移させる（例: top.html など）
-                // window.location.href = 'top.html'; 
+                // window.location.href = 'main.html'; // ログイン後の画面があればここを有効に
             } catch (error) {
-                // ログイン失敗（アカウントがない）場合は新規登録を試みる
-                if (error.code === 'auth/user-not-found') {
-                    try {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                        alert('アカウントを作成し、ログインしました！');
-                        // window.location.href = 'top.html';
-                    } catch (createError) {
-                        alert('新規登録に失敗しました: ' + createError.message);
-                    }
-                } else {
-                    alert('ログインに失敗しました: ' + error.message);
+                // アカウントがない、またはパスワードエラーの場合のフォールバックとして新規作成を試す
+                try {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    alert('アカウントを作成し、ログインしました！');
+                } catch (createError) {
+                    alert('ログインに失敗しました。パスワードを確認してください。');
                 }
             } finally {
                 button.innerText = 'ログイン / 新規登録';
                 button.disabled = false;
             }
-        }
+        };
     </script>
 </body>
 </html>
