@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cosme ♥ ログイン</title>
+    <title>My Cosme ♥</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #fdf2f4;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
         .login-container {
             background: white;
@@ -41,48 +41,79 @@
             box-sizing: border-box;
             font-size: 14px;
             outline: none;
-            transition: border-color 0.2s;
         }
         input:focus {
             border-color: #e91e63;
         }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
         button {
-            width: 100%;
+            flex: 1;
             padding: 14px;
-            background: #e91e63;
-            color: white;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            transition: background 0.2s, transform 0.1s;
+            transition: opacity 0.2s;
+        }
+        .btn-login {
+            background: #e91e63;
+            color: white;
+        }
+        .btn-register {
+            background: #ffd1dc;
+            color: #d81b60;
         }
         button:hover {
-            background: #d81b60;
+            opacity: 0.9;
         }
-        button:active {
-            transform: scale(0.98);
+        /* アプリ本体の画面（最初は隠れていて、ログインすると表示される） */
+        #app-screen {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            background: white;
+            padding: 20px;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
-    <div class="login-container">
+    <!-- ログイン画面 -->
+    <div id="login-screen" class="login-container">
         <h2>My Cosme ♥</h2>
         <p>メールアドレスでログインして、データを同期しよう</p>
         
         <input type="email" id="email" placeholder="メールアドレス" value="codeblue04090611@gmail.com">
         <input type="password" id="password" placeholder="パスワード">
         
-        <button id="loginButton" onclick="handleLogin()">ログイン / 新規登録</button>
+        <div class="btn-group">
+            <button class="btn-login" onclick="handleLogin()">ログイン</button>
+            <button class="btn-register" onclick="handleRegister()">新規登録</button>
+        </div>
+    </div>
+
+    <!-- ログイン後のマイコスメ アプリ画面 -->
+    <div id="app-screen">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fdf2f4; padding-bottom: 15px;">
+            <h1 style="color: #e91e63; margin: 0; font-size: 22px;">My Cosme ♥ マイページ</h1>
+            <button onclick="handleLogout()" style="background: #eee; color: #555; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; flex: none;">ログアウト</button>
+        </div>
+        <div style="margin-top: 30px;">
+            <p style="color: #333; font-size: 16px;">ログイン成功！ここにあなたのコスメ管理画面が表示されます✨</p>
+            <!-- ここにいつものコスメアプリの中身を入れられます -->
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Firebaseの設定（あなたのプロジェクトの正しい情報）
         const firebaseConfig = {
   apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
   authDomain: "my-cosme.firebaseapp.com",
@@ -95,33 +126,59 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        const loginScreen = document.getElementById('login-screen');
+        const appScreen = document.getElementById('app-screen');
+
+        // すでにログインしている場合は自動でアプリ画面を表示
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginScreen.style.display = 'none';
+                appScreen.style.display = 'block';
+            } else {
+                loginScreen.style.display = 'block';
+                appScreen.style.display = 'none';
+            }
+        });
+
+        // ログインボタンを押したとき
         window.handleLogin = async function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const button = document.getElementById('loginButton');
 
             if (!email || !password) {
                 alert('メールアドレスとパスワードを入力してください。');
                 return;
             }
 
-            button.innerText = '処理中...';
-            button.disabled = true;
-
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                alert('ログインしました！');
+                // 成功したら自動で onAuthStateChanged が動いてアプリ画面に切り替わります
             } catch (error) {
-                try {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                    alert('アカウントを作成し、ログインしました！');
-                } catch (createError) {
-                    alert('ログインに失敗しました。パスワードを確認してください。');
-                }
-            } finally {
-                button.innerText = 'ログイン / 新規登録';
-                button.disabled = false;
+                alert('ログインに失敗しました: ' + error.message);
             }
+        };
+
+        // 新規登録ボタンを押したとき
+        window.handleRegister = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('メールアドレスとパスワードを入力してください。');
+                return;
+            }
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                // 成功したら自動で onAuthStateChanged が動いてアプリ画面に切り替わります
+            } catch (error) {
+                alert('新規登録に失敗しました: ' + error.message);
+            }
+        };
+
+        // ログアウトボタン
+        window.handleLogout = async function() {
+            await signOut(auth);
         };
     </script>
 </body>
