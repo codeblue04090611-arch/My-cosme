@@ -156,7 +156,7 @@
       margin-bottom: 10px;
       width: 100%;
     }
-    .form-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; width: 100%; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; width: 100%; box-sizing: border-box; }
     .form-group.full { grid-column: span 2; }
     label { font-size: 0.72rem; font-weight: bold; color: var(--text-sub); }
     
@@ -715,13 +715,13 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
-    apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
-    authDomain: "my-cosme.firebaseapp.com",
-    projectId: "my-cosme",
-    storageBucket: "my-cosme.firebasestorage.app",
-    messagingSenderId: "863803729557",
-    appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
-  };
+  apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
+  authDomain: "my-cosme.firebaseapp.com",
+  projectId: "my-cosme",
+  storageBucket: "my-cosme.firebasestorage.app",
+  messagingSenderId: "863803729557",
+  appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
+};
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
