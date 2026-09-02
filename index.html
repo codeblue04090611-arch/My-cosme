@@ -151,11 +151,12 @@
     }
     .form-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 10px;
+      width: 100%;
     }
-    .form-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; width: 100%; }
     .form-group.full { grid-column: span 2; }
     label { font-size: 0.72rem; font-weight: bold; color: var(--text-sub); }
     
@@ -169,6 +170,7 @@
       color: var(--text-main);
       width: 100%;
       transition: border-color 0.2s;
+      box-sizing: border-box;
     }
     input:focus, textarea:focus, select:focus { border-color: var(--primary); }
     textarea { height: 60px; resize: none; }
@@ -186,6 +188,7 @@
       justify-content: space-between;
       align-items: center;
       user-select: none;
+      box-sizing: border-box;
     }
     .select-picker-trigger::after {
       content: "▼";
@@ -197,11 +200,15 @@
       position: relative;
       display: flex;
       align-items: center;
+      width: 100%;
     }
     .date-input-wrapper input[type="date"] {
       appearance: none;
+      -webkit-appearance: none;
       padding-right: 36px;
       cursor: pointer;
+      width: 100%;
+      box-sizing: border-box;
     }
     .calendar-icon-overlay {
       position: absolute;
@@ -233,6 +240,7 @@
       overflow: hidden;
       transition: background 0.2s;
       width: 100%;
+      box-sizing: border-box;
     }
     .image-picker-preview {
       width: 38px; height: 38px; object-fit: cover; border-radius: 8px; display: none;
@@ -459,12 +467,11 @@
         <input type="text" id="searchInput" placeholder="ブランド名、商品名、#タグで検索..." oninput="render()">
       </div>
 
-      <!-- 商品登録フォーム（スケッチ通りの並び順） -->
+      <!-- 商品登録フォーム -->
       <div class="form-card" id="formCardSection">
         <div class="form-title">コスメ登録</div>
 
         <div class="form-grid">
-          <!-- 1行目: ブランド名 / 商品名 -->
           <div class="form-group">
             <label>ブランド名</label>
             <input type="text" id="brand" list="brandList" onfocus="updateBrandDatalist()">
@@ -475,7 +482,6 @@
             <input type="text" id="name" required>
           </div>
 
-          <!-- 2行目: カテゴリー / 状態 -->
           <div class="form-group">
             <label>カテゴリー</label>
             <div class="select-picker-trigger" id="categorySelectTrigger" onclick="openCenterModal('category')">リップ</div>
@@ -485,20 +491,18 @@
             <div class="select-picker-trigger" id="statusSelectTrigger" onclick="openCenterModal('status')">今使ってる</div>
           </div>
 
-          <!-- 3行目: 金額 / 使用期限 -->
           <div class="form-group">
             <label>金額</label>
             <input type="number" id="priceInput" placeholder="例: 1500" min="0">
           </div>
           <div class="form-group">
-            <label id="formExpireLabel">使用期限</label>
+            <label>使用期限</label>
             <div class="date-input-wrapper">
               <input type="date" id="expireDate">
               <span class="calendar-icon-overlay">📅</span>
             </div>
           </div>
 
-          <!-- 画像選択 (横長フル幅) -->
           <div class="form-group full">
             <label>画像</label>
             <div class="image-picker-box" onclick="document.getElementById('imageInput').click()">
@@ -508,7 +512,6 @@
             <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
           </div>
 
-          <!-- ハッシュタグ -->
           <div class="form-group full">
             <label>ハッシュタグ</label>
             <input type="text" id="tagInput" list="tagList" placeholder="文字を入力して選択" oninput="handleTagInput(event)">
@@ -516,7 +519,6 @@
             <div class="selected-tags-box" id="selectedTagsBox"></div>
           </div>
 
-          <!-- メモ -->
           <div class="form-group full">
             <label>メモ</label>
             <textarea id="notes" placeholder="メモを入力"></textarea>
@@ -711,7 +713,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    const firebaseConfig ={
+    const firebaseConfig = {
     apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
     authDomain: "my-cosme.firebaseapp.com",
     projectId: "my-cosme",
@@ -908,14 +910,6 @@
       const stObj = statuses.find(s => s.key === formStatusKey);
       const stLabel = stObj ? stObj.label : '今使ってる';
       document.getElementById('statusSelectTrigger').textContent = stLabel;
-      
-      const expireLabel = document.getElementById('formExpireLabel');
-      if (formStatusKey === 'stock') {
-        expireLabel.textContent = 'ストックの期限';
-      } else {
-        expireLabel.textContent = '今使ってる期限';
-      }
-
       document.getElementById('favCategoryTrigger').textContent = formFavCategory;
     }
 
@@ -1119,21 +1113,50 @@
       });
     }
 
+    // 画像を軽く圧縮して高速化する関数
     function previewImage(input) {
       const file = input.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-          currentImageBase64 = e.target.result;
-          const preview = document.getElementById('imagePreview');
-          const placeholder = document.getElementById('uploadPlaceholder');
-          preview.src = currentImageBase64;
-          preview.style.display = 'block';
-          placeholder.style.display = 'none';
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 400;
+            const MAX_HEIGHT = 400;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            currentImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            preview.src = currentImageBase64;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+          };
+          img.src = e.target.result;
         };
         reader.readAsDataURL(file);
       }
     }
+
     function resetImagePicker() {
       currentImageBase64 = '';
       document.getElementById('imageInput').value = '';
