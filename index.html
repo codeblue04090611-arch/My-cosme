@@ -425,7 +425,10 @@
   <!-- 1. ログイン / 新規登録画面 -->
   <div id="loginScreen">
     <div class="login-box">
-      <div id="authHeaderTitle" style="font-family: 'Georgia', serif; font-style: italic; font-size: 2rem; color: #9e828d; margin-bottom: 2px;">My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="color: #f7a8c4; font-size: 1.2rem;">♥</span></div>
+      <!-- ログイン画面のハートをホーム画面と完全に同じ形の ♥ に統一 -->
+      <div id="authHeaderTitle" style="font-family: 'Georgia', serif; font-style: italic; font-size: 2rem; color: #9e828d; margin-bottom: 2px;">
+        My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="font-size: 1.2rem; color: var(--primary); vertical-align: middle; margin-left: -2px;">♥</span>
+      </div>
       <p id="authSubTitle" style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 20px;">メールアドレスでログインして、データを同期しよう</p>
       
       <!-- エラーメッセージ表示エリア -->
@@ -748,7 +751,6 @@
   messagingSenderId: "863803729557",
   appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
 };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
@@ -791,7 +793,7 @@
         actionBtn.textContent = "登録して始める";
         toggleLink.textContent = "アカウントをお持ちの方（ログイン）";
       } else {
-        headerTitle.innerHTML = `My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="color: #f7a8c4; font-size: 1.2rem;">♥</span>`;
+        headerTitle.innerHTML = `My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="font-size: 1.2rem; color: var(--primary); vertical-align: middle; margin-left: -2px;">♥</span>`;
         headerTitle.style.fontFamily = "'Georgia', serif";
         headerTitle.style.fontStyle = "italic";
         headerTitle.style.fontSize = "2rem";
@@ -821,7 +823,6 @@
           await signInWithEmailAndPassword(auth, email, password);
         }
       } catch (error) {
-        // エラー内容に応じて分かりやすいメッセージを表示する
         let msg = '認証に失敗しました';
         if (error.code === 'auth/email-already-in-use') {
           msg = 'このメールアドレスは既に登録されています';
