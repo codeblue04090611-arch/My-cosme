@@ -28,7 +28,7 @@
       padding: 24px 16px 110px;
     }
 
-    /* ログイン画面 */
+    /* ログイン・新規登録画面 */
     #loginScreen {
       display: flex;
       justify-content: center;
@@ -345,7 +345,7 @@
     }
     .menu-item:hover { background: var(--primary-soft); color: var(--accent); }
 
-    /* 設定モーダル（アプリらしい可愛いデザイン） */
+    /* 設定モーダル */
     .settings-modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px;
     }
@@ -408,11 +408,11 @@
 </head>
 <body>
 
-  <!-- 1. ログイン画面（メールアドレスは完全空欄） -->
+  <!-- 1. ログイン / 新規登録画面（切り替え式） -->
   <div id="loginScreen">
     <div class="login-box">
       <div style="font-family: 'Georgia', serif; font-style: italic; font-size: 2rem; color: #9e828d; margin-bottom: 2px;">My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="color: #f7a8c4; font-size: 1.2rem;">♥</span></div>
-      <p style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 25px;">メールアドレスでログインして、データを同期しよう</p>
+      <p id="authSubTitle" style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 25px;">メールアドレスでログインして、データを同期しよう</p>
       
       <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
         <div>
@@ -424,10 +424,10 @@
           <input type="password" id="loginPassword" placeholder="パスワード（6文字以上）" style="margin-top: 4px;">
         </div>
         
-        <button onclick="handleLogin()" style="width:100%; background:linear-gradient(135deg, #f7a8c4, #e06d98); color:white; border:none; padding:13px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:0.95rem; box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3); margin-top: 6px;">ログインする</button>
+        <button id="authActionBtn" onclick="handleAuthAction()" style="width:100%; background:linear-gradient(135deg, #f7a8c4, #e06d98); color:white; border:none; padding:13px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:0.95rem; box-shadow: 0 4px 12px rgba(224, 109, 152, 0.3); margin-top: 6px;">ログインする</button>
         
         <div style="text-align: center; margin-top: 10px;">
-          <a href="#" onclick="handleRegister(); return false;" style="font-size: 0.8rem; color: var(--text-sub); text-decoration: none;">アカウントをお持ちでない方（新規登録）</a>
+          <a href="#" id="authToggleLink" onclick="toggleAuthMode(); return false;" style="font-size: 0.8rem; color: var(--text-sub); text-decoration: none;">アカウントをお持ちでない方（新規登録）</a>
         </div>
       </div>
     </div>
@@ -445,7 +445,6 @@
           <span class="logo-cosme">cosme</span>
           <span class="logo-heart">♥</span>
         </div>
-        <!-- 右端上は設定ボタンに変更 -->
         <div class="menu-icon-btn" onclick="openSettingsModal()" title="設定" style="font-size: 1.1rem;">⚙️</div>
       </div>
 
@@ -627,7 +626,7 @@
 
   </div>
 
-  <!-- サイドメニュー（ログアウトを削除してスッキリ） -->
+  <!-- サイドメニュー -->
   <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu(event)">
     <div class="side-menu" onclick="event.stopPropagation()">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -646,7 +645,7 @@
     </div>
   </div>
 
-  <!-- 右上の設定（⚙️）を押したときに出てくる可愛いポップアップ -->
+  <!-- 設定モーダル -->
   <div class="settings-modal-overlay" id="settingsModalOverlay" onclick="closeSettingsModal(event)">
     <div class="settings-modal" onclick="event.stopPropagation()">
       <h3 style="color:var(--accent); font-size:1.1rem; margin-bottom:12px;">⚙️ 設定</h3>
@@ -656,7 +655,7 @@
     </div>
   </div>
 
-  <!-- アプリらしい可愛い「ログアウトしますか？」確認ダイアログ -->
+  <!-- ログアウト確認ダイアログ -->
   <div class="dialog-overlay" id="logoutDialogOverlay">
     <div class="dialog-box">
       <h3 style="color:var(--accent); font-size:1.05rem; margin-bottom:8px;">🚪 ログアウト</h3>
@@ -739,6 +738,62 @@
     const loginScreen = document.getElementById('loginScreen');
     const appRootContainer = document.getElementById('appRootContainer');
 
+    let isRegisterMode = false;
+
+    // 画面の切り替え（ログイン ⇄ 新規アカウント登録）
+    window.toggleAuthMode = function() {
+      isRegisterMode = !isRegisterMode;
+      const subTitle = document.getElementById('authSubTitle');
+      const actionBtn = document.getElementById('authActionBtn');
+      const toggleLink = document.getElementById('authToggleLink');
+      
+      // ロゴ部分に「新規アカウント登録」を出すために動的にHTMLを書き換え
+      const logoBox = loginScreen.querySelector('.login-box div:first-child');
+
+      if (isRegisterMode) {
+        logoBox.innerHTML = `新規アカウント登録`;
+        logoBox.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        logoBox.style.fontStyle = "normal";
+        logoBox.style.fontWeight = "bold";
+        logoBox.style.fontSize = "1.25rem";
+        logoBox.style.color = "var(--text-main)";
+
+        subTitle.textContent = "MacとiPhoneでデータを同期します";
+        actionBtn.textContent = "登録して始める";
+        toggleLink.textContent = "アカウントをお持ちの方（ログイン）";
+      } else {
+        logoBox.innerHTML = `My <span style="font-family: sans-serif; font-weight: 900; color: #e06d98; font-size: 2.1rem; font-style: normal;">cosme</span><span style="color: #f7a8c4; font-size: 1.2rem;">♥</span>`;
+        logoBox.style.fontFamily = "'Georgia', serif";
+        logoBox.style.fontStyle = "italic";
+        logoBox.style.fontSize = "2rem";
+        logoBox.style.color = "#9e828d";
+
+        subTitle.textContent = "メールアドレスでログインして、データを同期しよう";
+        actionBtn.textContent = "ログインする";
+        toggleLink.textContent = "アカウントをお持ちでない方（新規登録）";
+      }
+    };
+
+    // 認証ボタンを押したときの処理（ブラウザ標準alertを出さない安全設計）
+    window.handleAuthAction = async function() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!email || !password) {
+        // alertの代わりにアプリらしい可愛い演出にするか、簡易的にreturn
+        return; 
+      }
+      try {
+        if (isRegisterMode) {
+          await createUserWithEmailAndPassword(auth, email, password);
+        } else {
+          await signInWithEmailAndPassword(auth, email, password);
+        }
+      } catch (error) {
+        // エラー時はシンプルにコンソール等へ（アラートを出さない）
+        console.error(error.message);
+      }
+    };
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         loginScreen.style.display = 'none';
@@ -749,28 +804,6 @@
         appRootContainer.style.display = 'none';
       }
     });
-
-    window.handleLogin = async function() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value.trim();
-      if (!email || !password) { alert('メールアドレスとパスワードを入力してください'); return; }
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        alert('ログインに失敗しました: ' + error.message);
-      }
-    };
-
-    window.handleRegister = async function() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value.trim();
-      if (!email || !password) { alert('メールアドレスとパスワードを入力してください'); return; }
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        alert('新規登録に失敗しました: ' + error.message);
-      }
-    };
 
     // 設定モーダルの開閉
     window.openSettingsModal = function() {
@@ -1724,7 +1757,7 @@
           </div>
         </div>
 
-        <button class="btn-submit" onclick="saveEditedItem(${item.id})">変更を保存する</button>
+        <button class="btn-submit" onclick="saveEditedItem(${item.id})">変更する</button>
         <button class="btn-action" style="background:#f4f4f5; color:var(--text-sub); border-color:var(--border);" onclick="openModal(${item.id})">キャンセルして戻る</button>
       `;
     }
