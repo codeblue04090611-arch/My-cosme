@@ -3,110 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cosme ♥</title>
+    <title>My cosme ♥</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #fdf2f4;
-            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
-        .login-container {
-            background: white;
-            padding: 40px;
+        .login-box {
+            background: #ffffff;
+            padding: 40px 50px;
             border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(233, 30, 99, 0.1);
-            width: 350px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 400px;
+            box-sizing: border-box;
             text-align: center;
         }
-        h2 {
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
             color: #e91e63;
-            margin-bottom: 10px;
-            font-size: 24px;
+            margin-bottom: 8px;
+            font-style: italic;
         }
-        p {
-            color: #777;
+        .subtext {
             font-size: 13px;
-            margin-bottom: 30px;
+            color: #888888;
+            margin-bottom: 35px;
         }
-        input {
+        .input-field {
             width: 100%;
-            padding: 14px;
+            padding: 14px 18px;
             margin-bottom: 16px;
-            border: 1px solid #ffd1dc;
+            border: 1px solid #e0e0e0;
             border-radius: 12px;
             box-sizing: border-box;
             font-size: 14px;
             outline: none;
+            transition: border-color 0.2s;
         }
-        input:focus {
+        .input-field:focus {
             border-color: #e91e63;
         }
-        .btn-group {
+        .btn-container {
             display: flex;
             gap: 10px;
             margin-top: 10px;
         }
-        button {
+        .action-btn {
             flex: 1;
             padding: 14px;
             border: none;
             border-radius: 12px;
-            cursor: pointer;
             font-size: 15px;
             font-weight: bold;
+            cursor: pointer;
             transition: opacity 0.2s;
         }
         .btn-login {
-            background: #e91e63;
+            background: linear-gradient(135deg, #f06292, #e91e63);
             color: white;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
         }
         .btn-register {
-            background: #ffd1dc;
-            color: #d81b60;
+            background: #fce4ec;
+            color: #c2185b;
         }
-        button:hover {
+        .action-btn:hover {
             opacity: 0.9;
         }
-        /* アプリ本体の画面（最初は隠れていて、ログインすると表示される） */
+        /* ログイン成功後に切り替わるアプリ画面 */
         #app-screen {
             display: none;
             width: 100%;
             height: 100vh;
-            background: white;
-            padding: 20px;
+            background: #ffffff;
+            padding: 30px;
             box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
-    <!-- ログイン画面 -->
-    <div id="login-screen" class="login-container">
-        <h2>My Cosme ♥</h2>
-        <p>メールアドレスでログインして、データを同期しよう</p>
+    <!-- ログイン画面（お気に入りの見た目を完全再現） -->
+    <div id="login-screen" class="login-box">
+        <div class="logo">My cosme ♥</div>
+        <div class="subtext">メールアドレスでログインして、スマホとPCでデータを同期しよう</div>
         
-        <input type="email" id="email" placeholder="メールアドレス" value="codeblue04090611@gmail.com">
-        <input type="password" id="password" placeholder="パスワード">
+        <input type="email" id="email" class="input-field" placeholder="メールアドレス" value="codeblue04090611@gmail.com">
+        <input type="password" id="password" class="input-field" placeholder="パスワード（6文字以上）">
         
-        <div class="btn-group">
-            <button class="btn-login" onclick="handleLogin()">ログイン</button>
-            <button class="btn-register" onclick="handleRegister()">新規登録</button>
+        <div class="btn-container">
+            <button class="action-btn btn-login" onclick="handleLogin()">ログイン</button>
+            <button class="action-btn btn-register" onclick="handleRegister()">新規登録</button>
         </div>
     </div>
 
     <!-- ログイン後のマイコスメ アプリ画面 -->
     <div id="app-screen">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fdf2f4; padding-bottom: 15px;">
-            <h1 style="color: #e91e63; margin: 0; font-size: 22px;">My Cosme ♥ マイページ</h1>
-            <button onclick="handleLogout()" style="background: #eee; color: #555; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; flex: none;">ログアウト</button>
+            <h1 style="color: #e91e63; margin: 0; font-size: 24px;">My cosme ♥ マイページ</h1>
+            <button onclick="handleLogout()" style="background: #f0f2f5; color: #555; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">ログアウト</button>
         </div>
-        <div style="margin-top: 30px;">
-            <p style="color: #333; font-size: 16px;">ログイン成功！ここにあなたのコスメ管理画面が表示されます✨</p>
-            <!-- ここにいつものコスメアプリの中身を入れられます -->
+        <div style="margin-top: 40px; text-align: center;">
+            <h2 style="color: #333; font-size: 20px;">ログイン成功しました✨</h2>
+            <p style="color: #666;">ここにあなたのコスメ管理アプリの画面が広がります！</p>
         </div>
     </div>
 
@@ -115,13 +120,9 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
-  apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
-  authDomain: "my-cosme.firebaseapp.com",
-  projectId: "my-cosme",
-  storageBucket: "my-cosme.firebasestorage.app",
-  messagingSenderId: "863803729557",
-  appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
-};
+            authDomain: "mycosme.firebaseapp.com",
+            projectId: "mycosme"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -129,7 +130,7 @@
         const loginScreen = document.getElementById('login-screen');
         const appScreen = document.getElementById('app-screen');
 
-        // すでにログインしている場合は自動でアプリ画面を表示
+        // ログイン状態を監視して、ログインしていれば自動でアプリ画面を表示
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginScreen.style.display = 'none';
@@ -140,7 +141,7 @@
             }
         });
 
-        // ログインボタンを押したとき
+        // ログインボタンの処理
         window.handleLogin = async function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -152,13 +153,12 @@
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // 成功したら自動で onAuthStateChanged が動いてアプリ画面に切り替わります
             } catch (error) {
                 alert('ログインに失敗しました: ' + error.message);
             }
         };
 
-        // 新規登録ボタンを押したとき
+        // 新規登録ボタンの処理
         window.handleRegister = async function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -170,13 +170,12 @@
 
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                // 成功したら自動で onAuthStateChanged が動いてアプリ画面に切り替わります
             } catch (error) {
                 alert('新規登録に失敗しました: ' + error.message);
             }
         };
 
-        // ログアウトボタン
+        // ログアウト処理
         window.handleLogout = async function() {
             await signOut(auth);
         };
