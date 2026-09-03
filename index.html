@@ -84,6 +84,7 @@
     .app-logo {
       display: flex;
       align-items: baseline;
+      justify-content: center;
       gap: 3px;
       text-decoration: none;
       cursor: default;
@@ -160,7 +161,6 @@
     .form-group.full { grid-column: span 2; }
     label { font-size: 0.72rem; font-weight: bold; color: var(--text-sub); }
     
-    /* すべての入力枠・セレクト・日付の高さを完全統一 */
     input, textarea, select, .select-picker-trigger, .date-input-wrapper input[type="date"] {
       height: 46px;
       padding: 0 14px;
@@ -416,7 +416,7 @@
 
   <div id="loginScreen">
     <div class="login-box">
-      <div id="authHeaderTitle" class="app-logo" style="justify-content: center; margin-bottom: 2px;">
+      <div id="authHeaderTitle" class="app-logo" style="margin-bottom: 2px;">
         <span class="logo-my">My</span>
         <span class="logo-cosme">cosme</span>
         <span class="logo-heart">🩷</span>
@@ -709,13 +709,13 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AlzaSyBA1KN4SpBCXkr1xA19-7ZqE",
-      authDomain: "mycosme.firebaseapp.com",
-      projectId: "mycosme",
-      storageBucket: "mycosme.firebasestorage.app",
-      messagingSenderId: "863803729557",
-      appId: "1:863803729557:web:6ca52564dd9c"
-    };
+  apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
+  authDomain: "my-cosme.firebaseapp.com",
+  projectId: "my-cosme",
+  storageBucket: "my-cosme.firebasestorage.app",
+  messagingSenderId: "863803729557",
+  appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
+};
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -792,15 +792,18 @@
           await signInWithEmailAndPassword(auth, email, password);
         }
       } catch (error) {
-        let msg = '認証に失敗しました';
+        console.error("Auth error:", error.code, error.message);
+        let msg = '認証に失敗しました (' + error.code + ')';
         if (error.code === 'auth/email-already-in-use') {
           msg = 'このメールアドレスは既に登録されています';
         } else if (error.code === 'auth/invalid-email') {
           msg = 'メールアドレスの形式が正しくありません';
         } else if (error.code === 'auth/weak-password') {
           msg = 'パスワードは6文字以上で入力してください';
-        } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-login-credentials') {
           msg = 'メールアドレスまたはパスワードが間違っています';
+        } else if (error.code === 'auth/too-many-requests') {
+          msg = '連続して失敗したため、一時的にロックされています';
         }
         showAuthError(msg);
       }
