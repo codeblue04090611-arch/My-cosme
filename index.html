@@ -105,10 +105,11 @@
       letter-spacing: -0.5px;
     }
     .logo-heart {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--primary);
       vertical-align: middle;
-      margin-left: -2px;
+      margin-left: -1px;
+      display: inline-block;
       animation: pulse 2s infinite ease-in-out;
     }
 
@@ -419,7 +420,7 @@
       <div id="authHeaderTitle" class="app-logo" style="margin-bottom: 2px;">
         <span class="logo-my">My</span>
         <span class="logo-cosme">cosme</span>
-        <span class="logo-heart">🩷</span>
+        <span class="logo-heart">❤︎</span>
       </div>
       <p id="authSubTitle" style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 20px;">メールアドレスでログインして、データを同期しよう</p>
       
@@ -452,7 +453,7 @@
         <div class="app-logo">
           <span class="logo-my">My</span>
           <span class="logo-cosme">cosme</span>
-          <span class="logo-heart">🩷</span>
+          <span class="logo-heart">❤︎</span>
         </div>
         <div class="menu-icon-btn" onclick="openSettingsModal()" title="設定" style="font-size: 1.1rem;">⚙️</div>
       </div>
@@ -762,7 +763,7 @@
         headerTitle.innerHTML = `
           <span class="logo-my">My</span>
           <span class="logo-cosme">cosme</span>
-          <span class="logo-heart">🩷</span>
+          <span class="logo-heart">❤︎</span>
         `;
         headerTitle.style.fontFamily = "";
         headerTitle.style.fontStyle = "";
@@ -793,7 +794,7 @@
         }
       } catch (error) {
         console.error("Auth error:", error.code, error.message);
-        let msg = '認証に失敗しました (' + error.code + ')';
+        let msg = '認証に失敗しました';
         if (error.code === 'auth/email-already-in-use') {
           msg = 'このメールアドレスは既に登録されています';
         } else if (error.code === 'auth/invalid-email') {
@@ -1431,7 +1432,6 @@
       document.getElementById('notes').value = '';
       document.getElementById('tagInput').value = '';
       resetImagePicker();
-      alert('登録・更新しました！✨');
     }
 
     function openFinishRatingModal(id) {
