@@ -128,7 +128,7 @@
       box-shadow: 0 4px 15px rgba(224, 109, 152, 0.06);
     }
     .search-bar-box input {
-      border: none; background: transparent; outline: none; width: 100%; font-size: 16px; color: var(--text-main);
+      border: none; background: transparent; outline: none; width: 100%; font-size: 16px; color: var(--text-main); height: auto; padding: 0;
     }
 
     .form-card {
@@ -160,8 +160,10 @@
     .form-group.full { grid-column: span 2; }
     label { font-size: 0.72rem; font-weight: bold; color: var(--text-sub); }
     
-    input, textarea, select {
-      padding: 11px 14px;
+    /* すべての入力枠・セレクト・日付の高さを完全統一 */
+    input, textarea, select, .select-picker-trigger, .date-input-wrapper input[type="date"] {
+      height: 46px;
+      padding: 0 14px;
       border: 1.5px solid var(--border);
       border-radius: 14px;
       font-size: 16px;
@@ -171,24 +173,16 @@
       width: 100%;
       transition: border-color 0.2s;
       box-sizing: border-box;
+      display: flex;
+      align-items: center;
     }
-    input:focus, textarea:focus, select:focus { border-color: var(--primary); }
-    textarea { height: 60px; resize: none; }
+    input:focus, textarea:focus, select:focus, .select-picker-trigger:focus { border-color: var(--primary); }
+    textarea { height: 60px; resize: none; padding-top: 10px; }
 
     .select-picker-trigger {
-      padding: 11px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      font-size: 16px;
-      background: #fffcfd;
-      color: var(--text-main);
-      width: 100%;
-      cursor: pointer;
-      display: flex;
       justify-content: space-between;
-      align-items: center;
+      cursor: pointer;
       user-select: none;
-      box-sizing: border-box;
     }
     .select-picker-trigger::after {
       content: "▼";
@@ -198,22 +192,22 @@
 
     .date-input-wrapper {
       position: relative;
-      display: flex;
-      align-items: center;
-      width: 100%;
-      box-sizing: border-box;
+      padding: 0;
+      border: none;
+      background: transparent;
+      height: 46px;
     }
     .date-input-wrapper input[type="date"] {
       appearance: none;
       -webkit-appearance: none;
       padding-right: 36px;
       cursor: pointer;
-      width: 100%;
-      box-sizing: border-box;
     }
     .calendar-icon-overlay {
       position: absolute;
       right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
       pointer-events: none;
       font-size: 0.95rem;
     }
@@ -715,13 +709,13 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
-  apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
-  authDomain: "my-cosme.firebaseapp.com",
-  projectId: "my-cosme",
-  storageBucket: "my-cosme.firebasestorage.app",
-  messagingSenderId: "863803729557",
-  appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
-};
+      apiKey: "AlzaSyBA1KN4SpBCXkr1xA19-7ZqE",
+      authDomain: "mycosme.firebaseapp.com",
+      projectId: "mycosme",
+      storageBucket: "mycosme.firebasestorage.app",
+      messagingSenderId: "863803729557",
+      appId: "1:863803729557:web:6ca52564dd9c"
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -1547,8 +1541,15 @@
         const imgHtml = item.img ? `<img src="${item.img}" class="item-img" alt="${item.name}">` : `<div class="item-img">🎀</div>`;
 
         let badgesHtml = '';
-        if ((item.usingCount || 0) > 0) badgesHtml += `<span class="status-badge badge-using">使用中:${item.usingCount}</span>`;
-        if ((item.stockCount || 0) > 0) badgesHtml += `<span class="status-badge badge-stock">ストック:${item.stockCount}</span>`;
+        if (currentTab === 'using') {
+          if ((item.usingCount || 0) > 0) badgesHtml += `<span class="status-badge badge-using">使用中:${item.usingCount}</span>`;
+        } else if (currentTab === 'stock') {
+          if ((item.stockCount || 0) > 0) badgesHtml += `<span class="status-badge badge-stock">ストック:${item.stockCount}</span>`;
+        } else {
+          if ((item.usingCount || 0) > 0) badgesHtml += `<span class="status-badge badge-using">使用中:${item.usingCount}</span>`;
+          if ((item.stockCount || 0) > 0) badgesHtml += `<span class="status-badge badge-stock">ストック:${item.stockCount}</span>`;
+        }
+
         if ((item.finishedCount || 0) > 0) badgesHtml += `<span class="status-badge badge-finished">使い切り:${item.finishedCount}</span>`;
         if (item.isBuy) badgesHtml += `<span class="status-badge badge-buy">買う</span>`;
         if (item.isWishlist) badgesHtml += `<span class="status-badge badge-wishlist">欲しい</span>`;
@@ -1701,7 +1702,7 @@
 
         <div style="background:#f4fbf7; padding:8px 10px; border-radius:12px; border:1px solid #a7f3d0; margin-top:8px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span class="modal-label" style="color:#10b981;">✨ 今使ってる分 (個数調整)</span>
+            <span class="modal-label" style="color:#10b981;">✨ 今使ってる分</span>
             <div style="display:flex; gap:4px;">
               <button style="background:white; border:1px solid #10b981; color:#10b981; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'using', -1)">-</button>
               <button style="background:white; border:1px solid #10b981; color:#10b981; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'using', 1)">+</button>
@@ -1712,7 +1713,7 @@
 
         <div style="background:#fff5f8; padding:8px 10px; border-radius:12px; border:1px solid #fecdd3; margin-top:6px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span class="modal-label" style="color:#e11d48;">📦 未開封ストック (個数調整)</span>
+            <span class="modal-label" style="color:#e11d48;">📦 未開封ストック</span>
             <div style="display:flex; gap:4px;">
               <button style="background:white; border:1px solid #e11d48; color:#e11d48; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'stock', -1)">-</button>
               <button style="background:white; border:1px solid #e11d48; color:#e11d48; width:24px; height:24px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="changeCount(${item.id}, 'stock', 1)">+</button>
@@ -1781,28 +1782,6 @@
             <label>金額</label>
             <input type="number" id="editPrice_${item.id}" value="${item.price || ''}" min="0" placeholder="例: 1500">
           </div>
-          <div class="form-group">
-            <label>使用期限</label>
-            <div class="date-input-wrapper">
-              <input type="date" id="editExpire_${item.id}" value="${item.expireDate || ''}">
-              <span class="calendar-icon-overlay">📅</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>今使ってる個数</label>
-            <input type="number" id="editUsingCount_${item.id}" value="${item.usingCount || 0}" min="0">
-          </div>
-          <div class="form-group">
-            <label>ストック個数</label>
-            <input type="number" id="editStockCount_${item.id}" value="${item.stockCount || 0}" min="0">
-          </div>
-          <div class="form-group">
-            <label>ストック期限</label>
-            <div class="date-input-wrapper">
-              <input type="date" id="editStockExpire_${item.id}" value="${item.stockExpireDate || ''}">
-              <span class="calendar-icon-overlay">📅</span>
-            </div>
-          </div>
           <div class="form-group full">
             <label>ハッシュタグ</label>
             <div style="display:flex; gap:6px; margin-bottom:4px;">
@@ -1856,10 +1835,6 @@
       item.name = name;
       item.category = document.getElementById(`editCategory_${id}`).value;
       item.price = parseInt(document.getElementById(`editPrice_${id}`).value) || 0;
-      item.expireDate = document.getElementById(`editExpire_${id}`).value;
-      item.stockExpireDate = document.getElementById(`editStockExpire_${id}`).value;
-      item.usingCount = parseInt(document.getElementById(`editUsingCount_${id}`).value) || 0;
-      item.stockCount = parseInt(document.getElementById(`editStockCount_${id}`).value) || 0;
       item.notes = document.getElementById(`editNotes_${id}`).value.trim();
       item.tags = [...editingItemTags];
 
