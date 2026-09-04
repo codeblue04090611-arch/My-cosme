@@ -463,15 +463,13 @@
         <input type="text" id="searchInput" placeholder="ブランド名、商品名、#タグで検索..." oninput="render()">
       </div>
 
-      <!-- 商品登録フォーム -->
       <div class="form-card" id="formCardSection">
         <div class="form-title">コスメ登録</div>
 
         <div class="form-grid">
           <div class="form-group">
             <label>ブランド名</label>
-            <input type="text" id="brand" list="brandList" onfocus="updateBrandDatalist()">
-            <datalist id="brandList"></datalist>
+            <input type="text" id="brand" placeholder="例: シャネル">
           </div>
           <div class="form-group">
             <label>商品名 *</label>
@@ -592,10 +590,9 @@
           <div class="form-group full">
             <label>商品を追加</label>
             <div style="display:flex; gap:6px; margin-bottom:6px;">
-              <input type="text" id="favBrandInput" list="favBrandList" placeholder="ブランド名" oninput="updateFavProductList()" onfocus="updateFavBrandList()" style="flex:0.8;">
-              <datalist id="favBrandList"></datalist>
+              <input type="text" id="favBrandInput" placeholder="ブランド名" style="flex:0.8;">
               
-              <input type="text" id="favProductInput" list="favProductList" placeholder="商品名を選択・入力" style="flex:1.2;">
+              <input type="text" id="favProductInput" list="favProductList" placeholder="商品名を入力" style="flex:1.2;">
               <datalist id="favProductList"></datalist>
 
               <button style="background:var(--accent); color:white; border:none; padding:0 14px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="addFavItemToList()">追加</button>
@@ -710,13 +707,13 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
-  apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
-  authDomain: "my-cosme.firebaseapp.com",
-  projectId: "my-cosme",
-  storageBucket: "my-cosme.firebasestorage.app",
-  messagingSenderId: "863803729557",
-  appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
-};
+    apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
+    authDomain: "my-cosme.firebaseapp.com",
+    projectId: "my-cosme",
+    storageBucket: "my-cosme.firebasestorage.app",
+    messagingSenderId: "863803729557",
+    appId: "1:863803729557:web:6ca917a8009bc72564dd9c"
+  };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -857,7 +854,6 @@
     let favCategories = ["メイク", "スキンケア"];
     let formFavCategory = "メイク";
 
-    let brands = [];
     let allTags = []; 
     let formTags = []; 
     let routines = []; 
@@ -879,7 +875,6 @@
       if (localStorage.getItem('mycosme_categories')) categories = JSON.parse(localStorage.getItem('mycosme_categories'));
       if (localStorage.getItem('mycosme_statuses')) statuses = JSON.parse(localStorage.getItem('mycosme_statuses'));
       if (localStorage.getItem('mycosme_fav_categories')) favCategories = JSON.parse(localStorage.getItem('mycosme_fav_categories'));
-      if (localStorage.getItem('mycosme_brands')) brands = JSON.parse(localStorage.getItem('mycosme_brands'));
       if (localStorage.getItem('mycosme_items')) items = JSON.parse(localStorage.getItem('mycosme_items'));
       if (localStorage.getItem('mycosme_all_tags')) allTags = JSON.parse(localStorage.getItem('mycosme_all_tags'));
       if (localStorage.getItem('mycosme_routines')) routines = JSON.parse(localStorage.getItem('mycosme_routines'));
@@ -889,7 +884,6 @@
       if (favCategories.length > 0) formFavCategory = favCategories[0];
 
       updateFormTriggers();
-      updateBrandDatalist();
       updateTagDatalist();
       render();
     }
@@ -899,7 +893,6 @@
       localStorage.setItem('mycosme_categories', JSON.stringify(categories));
       localStorage.setItem('mycosme_statuses', JSON.stringify(statuses));
       localStorage.setItem('mycosme_fav_categories', JSON.stringify(favCategories));
-      localStorage.setItem('mycosme_brands', JSON.stringify(brands));
       localStorage.setItem('mycosme_all_tags', JSON.stringify(allTags));
       localStorage.setItem('mycosme_routines', JSON.stringify(routines));
     }
@@ -999,18 +992,6 @@
     function showExpireTab() {
       showMainView();
       switchTab('expire');
-    }
-
-    function updateFavBrandList() {
-      const dl = document.getElementById('favBrandList');
-      dl.innerHTML = '';
-      brands.forEach(b => {
-        if (b.trim() !== '') {
-          const opt = document.createElement('option');
-          opt.value = b;
-          dl.appendChild(opt);
-        }
-      });
     }
 
     function updateFavProductList() {
@@ -1314,13 +1295,6 @@
     function closeCenterModalDirect() { document.getElementById('centerModalOverlay').style.display = 'none'; }
     function closeCenterModal(e) { if (e.target.id === 'centerModalOverlay') closeCenterModalDirect(); }
 
-    function updateBrandDatalist() {
-      items.forEach(i => { if (i.brand && !brands.includes(i.brand)) brands.push(i.brand); });
-      const dl = document.getElementById('brandList');
-      dl.innerHTML = '';
-      brands.forEach(b => { if (b.trim() !== '') { const o = document.createElement('option'); o.value = b; dl.appendChild(o); } });
-    }
-
     function switchTab(tab) {
       currentTab = tab;
       selectedCategoryFilter = null;
@@ -1349,7 +1323,6 @@
       const name = document.getElementById('name').value.trim();
       if (!name) { alert('商品名を入力してください'); return; }
       const brandInput = document.getElementById('brand').value.trim();
-      if (brandInput && !brands.includes(brandInput)) brands.push(brandInput);
       const category = formCategoryValue;
       const status = formStatusKey;
       
@@ -1419,11 +1392,9 @@
       }
 
       saveData();
-      updateBrandDatalist();
       formTags = [];
       renderSelectedTags();
       updateTagDatalist();
-      render();
 
       document.getElementById('name').value = '';
       document.getElementById('brand').value = '';
@@ -1432,6 +1403,9 @@
       document.getElementById('notes').value = '';
       document.getElementById('tagInput').value = '';
       resetImagePicker();
+
+      // 即時レンダリング実行
+      render();
     }
 
     function openFinishRatingModal(id) {
@@ -1844,7 +1818,6 @@
       item.tags.forEach(t => { if (!allTags.includes(t)) allTags.push(t); });
 
       saveData();
-      updateBrandDatalist();
       updateTagDatalist();
       openModal(id);
       render();
