@@ -323,13 +323,13 @@
       bottom: 16px; left: 16px; right: 16px;
       max-width: 468px;
       margin: 0 auto;
-      background: rgba(255, 255, 255, 0.88);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       border: 1.5px solid var(--border);
       border-radius: 34px;
       display: flex;
       justify-content: space-around;
-      padding: 10px 4px;
+      padding: 8px 6px;
       box-shadow: 0 12px 35px rgba(224, 109, 152, 0.18);
       z-index: 900;
     }
@@ -339,9 +339,16 @@
       font-size: 0.62rem; font-weight: bold; color: var(--text-sub);
       cursor: pointer; transition: all 0.2s;
       flex: 1;
+      padding: 6px 2px;
+      border-radius: 20px;
     }
-    .nav-item span.icon { font-size: 1.15rem; }
-    .nav-item.active { color: var(--accent); transform: translateY(-2px); }
+    .nav-item span.icon { font-size: 1.2rem; }
+    .nav-item.active {
+      color: white;
+      background: linear-gradient(135deg, #f7a8c4, #e06d98);
+      box-shadow: 0 4px 12px rgba(224, 109, 152, 0.4);
+      transform: translateY(-3px);
+    }
 
     .side-menu-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(84, 61, 70, 0.45); backdrop-filter: blur(4px); display: none; z-index: 2500; justify-content: flex-start;
@@ -1244,6 +1251,7 @@
         });
       } else if (currentModalType === 'favCategory') favCategories = newArr;
       saveData();
+      render();
     }
 
     function selectCenterItem(val) {
@@ -1278,6 +1286,7 @@
       input.value = '';
       updateFormTriggers();
       renderCenterModalList();
+      render();
     }
 
     function deleteCenterItem(index) {
@@ -1294,6 +1303,7 @@
       saveData();
       updateFormTriggers();
       renderCenterModalList();
+      render();
     }
 
     function closeCenterModalDirect() { document.getElementById('centerModalOverlay').style.display = 'none'; }
@@ -1319,7 +1329,6 @@
     }
 
     function filterCategory(cat) { selectedCategoryFilter = (selectedCategoryFilter === cat) ? null : cat; selectedTagFilter = null; render(); }
-    function filterTag(tag) { selectedTagFilter = (selectedTagFilter === tag) ? null : tag; selectedCategoryFilter = null; render(); }
 
     function normalizeStr(str) { return (str || '').replace(/\s+/g, '').toLowerCase(); }
 
@@ -1497,8 +1506,6 @@
         });
       } else if (selectedCategoryFilter) {
         displayItems = tabItems.filter(i => i.category === selectedCategoryFilter);
-      } else if (selectedTagFilter) {
-        displayItems = tabItems.filter(i => i.tags && i.tags.includes(selectedTagFilter));
       }
 
       const list = document.getElementById('itemList');
@@ -1579,21 +1586,17 @@
       });
 
       const counts = {};
-      const tagCounts = {};
       tabItems.forEach(i => {
         counts[i.category] = (counts[i.category] || 0) + 1;
-        if (i.tags) {
-          i.tags.forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
-        }
       });
 
       const summaryGrid = document.getElementById('summaryGrid');
       summaryGrid.innerHTML = '';
 
       const allBadge = document.createElement('div');
-      allBadge.className = `summary-badge ${(selectedCategoryFilter === null && selectedTagFilter === null) ? 'selected' : ''}`;
+      allBadge.className = `summary-badge ${selectedCategoryFilter === null ? 'selected' : ''}`;
       allBadge.textContent = `すべて (${tabItems.length})`;
-      allBadge.onclick = () => { selectedCategoryFilter = null; selectedTagFilter = null; render(); };
+      allBadge.onclick = () => { selectedCategoryFilter = null; render(); };
       summaryGrid.appendChild(allBadge);
 
       categories.forEach(cat => {
@@ -1604,14 +1607,6 @@
         badge.onclick = () => filterCategory(cat);
         summaryGrid.appendChild(badge);
       });
-
-      for (const [tag, count] of Object.entries(tagCounts)) {
-        const badge = document.createElement('div');
-        badge.className = `summary-badge ${selectedTagFilter === tag ? 'selected' : ''}`;
-        badge.textContent = `#${tag} (${count})`;
-        badge.onclick = () => filterTag(tag);
-        summaryGrid.appendChild(badge);
-      }
     }
 
     function openModal(id) {
