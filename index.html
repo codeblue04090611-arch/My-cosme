@@ -318,36 +318,39 @@
     .badge-expire-near { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
     .badge-expire-over { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
 
+    /* 下部ナビゲーション（タブ）のスタイルを大幅にわかりやすく改善 */
     .bottom-nav {
       position: fixed;
       bottom: 16px; left: 16px; right: 16px;
       max-width: 468px;
       margin: 0 auto;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border: 1.5px solid var(--border);
-      border-radius: 34px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(14px);
+      border: 2px solid var(--border);
+      border-radius: 36px;
       display: flex;
       justify-content: space-around;
-      padding: 8px 6px;
-      box-shadow: 0 12px 35px rgba(224, 109, 152, 0.18);
+      padding: 8px;
+      box-shadow: 0 12px 35px rgba(224, 109, 152, 0.2);
       z-index: 900;
     }
     .nav-item {
       background: none; border: none;
-      display: flex; flex-direction: column; align-items: center; gap: 2px;
-      font-size: 0.62rem; font-weight: bold; color: var(--text-sub);
-      cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 0.6rem; font-weight: bold; color: var(--text-sub);
+      cursor: pointer; transition: all 0.25s ease;
       flex: 1;
-      padding: 6px 2px;
-      border-radius: 20px;
+      padding: 8px 2px;
+      border-radius: 24px;
     }
-    .nav-item span.icon { font-size: 1.2rem; }
+    .nav-item span.icon { font-size: 1.15rem; }
+    
+    /* 選択中のタブ：しっかり浮き上がって濃いピンク色になり、どれを開いているか一目でわかるように */
     .nav-item.active {
       color: white;
       background: linear-gradient(135deg, #f7a8c4, #e06d98);
-      box-shadow: 0 4px 12px rgba(224, 109, 152, 0.4);
-      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(224, 109, 152, 0.45);
+      transform: translateY(-4px);
     }
 
     .side-menu-overlay {
@@ -1328,7 +1331,7 @@
       render();
     }
 
-    function filterCategory(cat) { selectedCategoryFilter = (selectedCategoryFilter === cat) ? null : cat; selectedTagFilter = null; render(); }
+    function filterCategory(cat) { selectedCategoryFilter = (selectedCategoryFilter === cat) ? null : cat; render(); }
 
     function normalizeStr(str) { return (str || '').replace(/\s+/g, '').toLowerCase(); }
 
