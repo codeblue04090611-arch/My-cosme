@@ -1302,7 +1302,7 @@
     function closeCenterModalDirect() { document.getElementById('centerModalOverlay').style.display = 'none'; }
     function closeCenterModal(e) { if (e.target.id === 'centerModalOverlay') closeCenterModalDirect(); }
 
-    function switchTab(tab) {
+    window.switchTab = function(tab) {
       currentTab = tab;
       selectedCategoryFilter = null;
       selectedTagFilter = null;
@@ -1325,7 +1325,7 @@
 
     function normalizeStr(str) { return (str || '').replace(/\s+/g, '').toLowerCase(); }
 
-    function addItem() {
+    window.addItem = function() {
       const name = document.getElementById('name').value.trim();
       if (!name) { alert('商品名を入力してください'); return; }
       const brandInput = document.getElementById('brand').value.trim();
@@ -1413,17 +1413,17 @@
       render();
     }
 
-    function openFinishRatingModal(id) {
+    window.openFinishRatingModal = function(id) {
       activeFinishItemId = id;
       setRating(5);
       document.getElementById('finishReviewInput').value = '';
       document.getElementById('ratingModalOverlay').style.display = 'flex';
     }
-    function setRating(val) {
+    window.setRating = function(val) {
       currentSelectedRating = val;
       document.querySelectorAll('#starRatingBox .star').forEach((star, index) => star.classList.toggle('active', index < val));
     }
-    function submitFinishRating() {
+    window.submitFinishRating = function() {
       if (!activeFinishItemId) return;
       const item = items.find(i => i.id === activeFinishItemId);
       if (item) {
@@ -1440,7 +1440,7 @@
       render();
     }
 
-    function changeCount(id, field, delta) {
+    window.changeCount = function(id, field, delta) {
       const item = items.find(i => i.id === id);
       if (!item) return;
       if (field === 'using') {
@@ -1455,7 +1455,7 @@
       render();
     }
 
-    function toggleFlagFromModal(id, flagKey) {
+    window.toggleFlagFromModal = function(id, flagKey) {
       const item = items.find(i => i.id === id);
       if (!item) return;
       if (flagKey === 'buy') item.isBuy = !item.isBuy;
@@ -1602,7 +1602,7 @@
       });
     }
 
-    function openModal(id) {
+    window.openModal = function(id) {
       const item = items.find(i => i.id === id);
       if (!item) return;
 
@@ -1712,7 +1712,7 @@
     }
 
     let editingItemTags = [];
-    function openEditModal(id) {
+    window.openEditModal = function(id) {
       const item = items.find(i => i.id === id);
       if (!item) return;
       editingItemTags = [...(item.tags || [])];
@@ -1772,7 +1772,7 @@
       `;
     }
 
-    function addEditTag(id) {
+    window.addEditTag = function(id) {
       const input = document.getElementById(`editTagInput_${id}`);
       const val = input.value.trim().replace(/^#/, '');
       if (val && !editingItemTags.includes(val)) {
@@ -1782,7 +1782,7 @@
       }
     }
 
-    function removeEditTag(id, tIdx) {
+    window.removeEditTag = function(id, tIdx) {
       editingItemTags.splice(tIdx, 1);
       renderEditTagsBox(id);
     }
@@ -1793,7 +1793,7 @@
       box.innerHTML = editingItemTags.map((t, tIdx) => `<div class="tag-chip">#${t} <span onclick="removeEditTag(${id}, ${tIdx})">×</span></div>`).join('');
     }
 
-    function saveEditedItem(id) {
+    window.saveEditedItem = function(id) {
       const item = items.find(i => i.id === id);
       if (!item) return;
 
@@ -1816,7 +1816,7 @@
       alert('商品情報を更新しました！✨');
     }
 
-    function updateModalImage(e, id) {
+    window.updateModalImage = function(e, id) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -1855,14 +1855,14 @@
         reader.readAsDataURL(file);
       }
     }
-    function removeModalImage(id) {
+    window.removeModalImage = function(id) {
       const item = items.find(i => i.id === id);
       if (item) { item.img = ''; saveData(); openModal(id); render(); }
     }
-    function closeModalDirect() { document.getElementById('modalOverlay').style.display = 'none'; }
-    function closeModal(e) { if (e.target.id === 'modalOverlay') closeModalDirect(); }
+    window.closeModalDirect = function() { document.getElementById('modalOverlay').style.display = 'none'; }
+    window.closeModal = function(e) { if (e.target.id === 'modalOverlay') closeModalDirect(); }
 
-    function promptDeleteItem(id) {
+    window.promptDeleteItem = function(id) {
       const dialog = document.getElementById('dialogOverlay');
       const confirmBtn = document.getElementById('dialogConfirmBtn');
       dialog.style.display = 'flex';
@@ -1874,7 +1874,7 @@
         render();
       };
     }
-    function closeDialog() { document.getElementById('dialogOverlay').style.display = 'none'; }
+    window.closeDialog = function() { document.getElementById('dialogOverlay').style.display = 'none'; }
   </script>
 </body>
 </html>
