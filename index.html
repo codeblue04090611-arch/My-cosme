@@ -527,17 +527,17 @@
       <div id="itemList" class="grid"></div>
 
       <nav class="bottom-nav">
-        <button class="nav-item active" id="nav-using" onclick="switchTab('using')">
+        <button class="nav-item active" id="nav-home" onclick="switchTab('home')">
+          <span class="icon">🏠</span>
+          <span>HOME</span>
+        </button>
+        <button class="nav-item" id="nav-using" onclick="switchTab('using')">
           <span class="icon">✨</span>
           <span>今使ってる</span>
         </button>
         <button class="nav-item" id="nav-stock" onclick="switchTab('stock')">
           <span class="icon">📦</span>
           <span>ストック</span>
-        </button>
-        <button class="nav-item" id="nav-finished" onclick="switchTab('finished')">
-          <span class="icon">💖</span>
-          <span>使い切り</span>
         </button>
         <button class="nav-item" id="nav-buy" onclick="switchTab('buy')">
           <span class="icon">🛒</span>
@@ -620,11 +620,14 @@
         <h3 style="color:var(--accent); font-size:1.1rem;">Menu</h3>
         <button onclick="closeSideMenuDirect()" style="background:var(--primary-soft); border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; color:var(--accent);">✕</button>
       </div>
-      <div class="menu-item" onclick="showMainView(); closeSideMenuDirect();">
+      <div class="menu-item" onclick="showMainView(); switchTab('home'); closeSideMenuDirect();">
         <span>🏠</span> HOME
       </div>
       <div class="menu-item" onclick="showRoutineView(); closeSideMenuDirect();">
         <span>🩷</span> favorite log
+      </div>
+      <div class="menu-item" onclick="showFinishedTab(); closeSideMenuDirect();">
+        <span>💖</span> 使いきり
       </div>
       <div class="menu-item" onclick="showExpireTab(); closeSideMenuDirect();">
         <span>⏰</span> 期限チェック
@@ -859,7 +862,7 @@
     let routines = []; 
     let currentFavItems = [];
 
-    let currentTab = 'using';
+    let currentTab = 'home';
     let selectedCategoryFilter = null;
     let selectedTagFilter = null;
     let items = [];
@@ -1007,6 +1010,10 @@
     window.showMainView = function() {
       document.getElementById('routineView').style.display = 'none';
       document.getElementById('mainView').style.display = 'block';
+    }
+    window.showFinishedTab = function() {
+      showMainView();
+      switchTab('finished');
     }
     window.showExpireTab = function() {
       showMainView();
@@ -1232,14 +1239,14 @@
       currentTab = tab;
       selectedCategoryFilter = null;
       selectedTagFilter = null;
-      ['using', 'stock', 'finished', 'buy', 'wishlist', 'expire'].forEach(t => {
+      ['home', 'using', 'stock', 'buy', 'wishlist', 'finished', 'expire'].forEach(t => {
         const el = document.getElementById(`nav-${t}`);
         if (el) el.classList.toggle('active', t === tab);
       });
 
       const formCard = document.getElementById('formCardSection');
       if (formCard) {
-        if (tab === 'expire') {
+        if (tab === 'expire' || tab === 'finished') {
           formCard.style.display = 'none';
         } else {
           formCard.style.display = 'block';
@@ -1409,6 +1416,7 @@
       renderSummary();
 
       let tabItems = items.filter(i => {
+        if (currentTab === 'home') return true; // HOMEなら全てのコスメを表示
         if (currentTab === 'using') return (i.usingCount || 0) > 0;
         if (currentTab === 'stock') return (i.stockCount || 0) > 0;
         if (currentTab === 'finished') return (i.finishedCount || 0) > 0;
@@ -1448,9 +1456,11 @@
 
       if (displayItems.length === 0) {
         let msg = '該当するコスメがありません';
+        if (currentTab === 'home') msg = 'まだ登録されているコスメがありません✨';
         if (currentTab === 'expire') msg = '一ヶ月以内に期限が切れるコスメはありません✨';
         if (currentTab === 'buy') msg = '買うものリストに追加されたコスメはありません🛒';
         if (currentTab === 'wishlist') msg = '欲しいものリストに追加されたコスメはありません🪄';
+        if (currentTab === 'finished') msg = '使い切ったコスメはありません💖';
         list.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-sub); padding:40px 0; font-size:0.85rem;">${msg}</div>`;
         return;
       }
@@ -1463,15 +1473,8 @@
         const imgHtml = item.img ? `<img src="${item.img}" class="item-img" alt="${item.name}">` : `<div class="item-img">🎀</div>`;
 
         let badgesHtml = '';
-        if (currentTab === 'using') {
-          if ((item.usingCount || 0) > 0) badgesHtml += `<span class="status-badge badge-using">使用中:${item.usingCount}</span>`;
-        } else if (currentTab === 'stock') {
-          if ((item.stockCount || 0) > 0) badgesHtml += `<span class="status-badge badge-stock">ストック:${item.stockCount}</span>`;
-        } else {
-          if ((item.usingCount || 0) > 0) badgesHtml += `<span class="status-badge badge-using">使用中:${item.usingCount}</span>`;
-          if ((item.stockCount || 0) > 0) badgesHtml += `<span class="status-badge badge-stock">ストック:${item.stockCount}</span>`;
-        }
-
+        if ((item.usingCount || 0) > 0) badgesHtml += `<span class="status-badge badge-using">使用中:${item.usingCount}</span>`;
+        if ((item.stockCount || 0) > 0) badgesHtml += `<span class="status-badge badge-stock">ストック:${item.stockCount}</span>`;
         if ((item.finishedCount || 0) > 0) badgesHtml += `<span class="status-badge badge-finished">使い切り:${item.finishedCount}</span>`;
         if (item.isBuy) badgesHtml += `<span class="status-badge badge-buy">買う</span>`;
         if (item.isWishlist) badgesHtml += `<span class="status-badge badge-wishlist">欲しい</span>`;
@@ -1506,7 +1509,8 @@
     }
 
     function renderSummary() {
-      const tabItems = items.filter(i => {
+      let tabItems = items.filter(i => {
+        if (currentTab === 'home') return true;
         if (currentTab === 'using') return (i.usingCount || 0) > 0;
         if (currentTab === 'stock') return (i.stockCount || 0) > 0;
         if (currentTab === 'finished') return (i.finishedCount || 0) > 0;
