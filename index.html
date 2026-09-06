@@ -486,8 +486,8 @@
           </div>
 
           <div class="form-group">
-            <label>金額</label>
-            <input type="number" id="priceInput" placeholder="例: 1500" min="0">
+            <label>金額 (円)</label>
+            <input type="text" id="priceInput" placeholder="例: 1500">
           </div>
           <div class="form-group">
             <label>使用期限</label>
@@ -998,105 +998,6 @@
       switchTab('expire');
     }
 
-    function updateFavProductList() {
-      const brandVal = document.getElementById('favBrandInput').value.trim().toLowerCase();
-      const dl = document.getElementById('favProductList');
-      dl.innerHTML = '';
-      
-      const filtered = items.filter(i => !brandVal || (i.brand && i.brand.toLowerCase().includes(brandVal)));
-      filtered.forEach(i => {
-        const opt = document.createElement('option');
-        opt.value = `${i.brand ? i.brand + ' - ' : ''}${i.name}`;
-        dl.appendChild(opt);
-      });
-    }
-
-    function addFavItemToList() {
-      const prodInput = document.getElementById('favProductInput').value.trim();
-      if (!prodInput) return;
-      if (!currentFavItems.includes(prodInput)) {
-        currentFavItems.push(prodInput);
-        renderFavSelectedItems();
-        document.getElementById('favProductInput').value = '';
-        document.getElementById('favBrandInput').value = '';
-      }
-    }
-
-    function removeFavItem(idx) {
-      currentFavItems.splice(idx, 1);
-      renderFavSelectedItems();
-    }
-
-    function renderFavSelectedItems() {
-      const box = document.getElementById('favSelectedItemsBox');
-      box.innerHTML = '';
-      currentFavItems.forEach((item, idx) => {
-        const chip = document.createElement('div');
-        chip.className = 'tag-chip';
-        chip.style.background = 'var(--card-bg)';
-        chip.style.border = '1px solid var(--border)';
-        chip.innerHTML = `${item} <span onclick="removeFavItem(${idx})">×</span>`;
-        box.appendChild(chip);
-      });
-    }
-
-    function addFavoriteLogRecord() {
-      const category = formFavCategory;
-      const title = document.getElementById('favTitle').value.trim() || 'お気に入りコスメ布陣';
-      let startDate = document.getElementById('favStartDate').value;
-      let endDate = document.getElementById('favEndDate').value;
-      
-      const todayStr = new Date().toISOString().split('T')[0];
-      if (!startDate) startDate = todayStr;
-      
-      const periodStr = endDate && endDate >= startDate ? `${startDate} 〜 ${endDate}` : `${startDate} 〜`;
-      const notes = document.getElementById('favNotesText').value.trim();
-
-      if (currentFavItems.length === 0) { alert('商品を少なくとも1つ追加してください'); return; }
-
-      routines.unshift({
-        id: Date.now(),
-        category,
-        title,
-        period: periodStr,
-        items: [...currentFavItems],
-        notes
-      });
-
-      saveData();
-      document.getElementById('favTitle').value = '';
-      document.getElementById('favNotesText').value = '';
-      currentFavItems = [];
-      renderFavSelectedItems();
-      renderRoutineHistory();
-      alert('favorite logを保存しました！✨');
-    }
-
-    function renderRoutineHistory() {
-      const list = document.getElementById('routineHistoryList');
-      list.innerHTML = '';
-      if (routines.length === 0) {
-        list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:30px 0; font-size:0.85rem;">まだ履歴がありません</div>`;
-        return;
-      }
-      routines.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'form-card';
-        div.style.marginBottom = '0';
-        const itemsHtml = r.items.map(i => `<span class="tag" style="margin:2px; display:inline-block; background:var(--card-bg); border:1px solid var(--border);">${i}</span>`).join('');
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <span class="tag">${r.category}</span>
-            <span style="font-size:0.75rem; color:var(--text-sub);">🗓 期間: ${r.period}</span>
-          </div>
-          <div style="font-weight:bold; color:var(--accent); font-size:1rem; margin-bottom:6px;">${r.title}</div>
-          <div style="margin-bottom:8px; display:flex; flex-wrap:wrap; gap:4px;">${itemsHtml}</div>
-          ${r.notes ? `<div style="font-size:0.82rem; white-space:pre-wrap; color:var(--text-main); background:#fff5f8; padding:8px 12px; border-radius:12px;">${r.notes}</div>` : ''}
-        `;
-        list.appendChild(div);
-      });
-    }
-
     function previewImage(input) {
       const file = input.files[0];
       if (file) {
@@ -1258,7 +1159,7 @@
       closeCenterModalDirect();
     }
 
-    function addItemToCenterModal() {
+    window.addItemToCenterModal = function() {
       const input = document.getElementById('centerModalAddInput');
       const val = input.value.trim();
       if (!val) return;
@@ -1299,8 +1200,8 @@
       render();
     }
 
-    function closeCenterModalDirect() { document.getElementById('centerModalOverlay').style.display = 'none'; }
-    function closeCenterModal(e) { if (e.target.id === 'centerModalOverlay') closeCenterModalDirect(); }
+    window.closeCenterModalDirect = function() { document.getElementById('centerModalOverlay').style.display = 'none'; }
+    window.closeCenterModal = function(e) { if (e.target.id === 'centerModalOverlay') closeCenterModalDirect(); }
 
     window.switchTab = function(tab) {
       currentTab = tab;
@@ -1332,7 +1233,8 @@
       const category = formCategoryValue;
       const status = formStatusKey;
       
-      const price = parseInt(document.getElementById('priceInput').value) || 0;
+      const priceVal = document.getElementById('priceInput').value.trim();
+      const price = priceVal ? parseInt(priceVal) || 0 : 0;
       const expireDateVal = document.getElementById('expireDate').value;
 
       let finalExpireDate = '';
@@ -1411,6 +1313,7 @@
       resetImagePicker();
 
       render();
+      alert('コスメを登録しました！✨');
     }
 
     window.openFinishRatingModal = function(id) {
@@ -1749,7 +1652,7 @@
           </div>
           <div class="form-group">
             <label>金額</label>
-            <input type="number" id="editPrice_${item.id}" value="${item.price || ''}" min="0" placeholder="例: 1500">
+            <input type="text" id="editPrice_${item.id}" value="${item.price || ''}" placeholder="例: 1500">
           </div>
           <div class="form-group full">
             <label>ハッシュタグ</label>
@@ -1803,7 +1706,8 @@
       item.brand = document.getElementById(`editBrand_${id}`).value.trim();
       item.name = name;
       item.category = document.getElementById(`editCategory_${id}`).value;
-      item.price = parseInt(document.getElementById(`editPrice_${id}`).value) || 0;
+      const editPriceVal = document.getElementById(`editPrice_${id}`).value.trim();
+      item.price = editPriceVal ? parseInt(editPriceVal) || 0 : 0;
       item.notes = document.getElementById(`editNotes_${id}`).value.trim();
       item.tags = [...editingItemTags];
 
