@@ -262,11 +262,15 @@
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       margin-bottom: 20px;
-      scrollbar-width: none;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
     }
-    .summary-scroll::-webkit-scrollbar { display: none; }
+    .summary-scroll::-webkit-scrollbar { height: 6px; }
+    .summary-scroll::-webkit-scrollbar-track { background: transparent; }
+    .summary-scroll::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 10px; }
+
     .summary-badge {
       background: var(--card-bg);
       color: var(--text-main);
@@ -279,6 +283,7 @@
       border: 1.5px solid var(--border);
       box-shadow: 0 2px 6px rgba(224, 109, 152, 0.04);
       transition: all 0.2s;
+      flex-shrink: 0;
     }
     .summary-badge.selected {
       background: var(--accent);
@@ -463,6 +468,7 @@
         <input type="text" id="searchInput" placeholder="ブランド名、商品名、#タグで検索..." oninput="render()">
       </div>
 
+      <!-- 商品登録フォーム -->
       <div class="form-card" id="formCardSection">
         <div class="form-title">コスメ登録</div>
 
@@ -522,7 +528,7 @@
         <button class="btn-submit" onclick="addItem()">コスメを登録</button>
       </div>
 
-      <div class="summary-scroll" id="summaryGrid"></div>
+      <div class="summary-scroll" id="summaryGrid" onwheel="this.scrollLeft += event.deltaY; event.preventDefault();"></div>
 
       <div id="itemList" class="grid"></div>
 
@@ -627,7 +633,7 @@
         <span>🩷</span> favorite log
       </div>
       <div class="menu-item" onclick="showFinishedTab(); closeSideMenuDirect();">
-        <span>💖</span> 使いきり
+        <span>🎀</span> 使いきり
       </div>
       <div class="menu-item" onclick="showExpireTab(); closeSideMenuDirect();">
         <span>⏰</span> 期限チェック
@@ -1460,7 +1466,7 @@
         if (currentTab === 'expire') msg = '一ヶ月以内に期限が切れるコスメはありません✨';
         if (currentTab === 'buy') msg = '買うものリストに追加されたコスメはありません🛒';
         if (currentTab === 'wishlist') msg = '欲しいものリストに追加されたコスメはありません🪄';
-        if (currentTab === 'finished') msg = '使い切ったコスメはありません💖';
+        if (currentTab === 'finished') msg = '使い切ったコスメはありません🎀';
         list.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-sub); padding:40px 0; font-size:0.85rem;">${msg}</div>`;
         return;
       }
