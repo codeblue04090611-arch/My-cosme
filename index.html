@@ -872,16 +872,21 @@
     let currentModalType = '';
 
     function initApp() {
-      if (localStorage.getItem('mycosme_categories')) {
-        categories = JSON.parse(localStorage.getItem('mycosme_categories'));
-      } else {
-        categories = ["ファンデーション", "下地", "日焼け止め", "アイメイク", "チーク", "リップ", "スキンケア", "クレンジング", "その他"];
+      try {
+        if (localStorage.getItem('mycosme_categories')) {
+          categories = JSON.parse(localStorage.getItem('mycosme_categories'));
+        }
+        if (localStorage.getItem('mycosme_statuses')) statuses = JSON.parse(localStorage.getItem('mycosme_statuses'));
+        if (localStorage.getItem('mycosme_fav_categories')) favCategories = JSON.parse(localStorage.getItem('mycosme_fav_categories'));
+        if (localStorage.getItem('mycosme_items')) items = JSON.parse(localStorage.getItem('mycosme_items'));
+        if (!Array.isArray(items)) items = [];
+        if (localStorage.getItem('mycosme_all_tags')) allTags = JSON.parse(localStorage.getItem('mycosme_all_tags'));
+        if (!Array.isArray(allTags)) allTags = [];
+        if (localStorage.getItem('mycosme_routines')) routines = JSON.parse(localStorage.getItem('mycosme_routines'));
+        if (!Array.isArray(routines)) routines = [];
+      } catch (e) {
+        items = [];
       }
-      if (localStorage.getItem('mycosme_statuses')) statuses = JSON.parse(localStorage.getItem('mycosme_statuses'));
-      if (localStorage.getItem('mycosme_fav_categories')) favCategories = JSON.parse(localStorage.getItem('mycosme_fav_categories'));
-      if (localStorage.getItem('mycosme_items')) items = JSON.parse(localStorage.getItem('mycosme_items'));
-      if (localStorage.getItem('mycosme_all_tags')) allTags = JSON.parse(localStorage.getItem('mycosme_all_tags'));
-      if (localStorage.getItem('mycosme_routines')) routines = JSON.parse(localStorage.getItem('mycosme_routines'));
 
       if (categories.length > 0 && !categories.includes(formCategoryValue)) formCategoryValue = categories[0];
       if (!statuses.some(s => s.key === formStatusKey) && statuses.length > 0) formStatusKey = statuses[0].key;
@@ -902,11 +907,16 @@
     }
 
     function updateFormTriggers() {
-      document.getElementById('categorySelectTrigger').textContent = formCategoryValue;
+      const catTrigger = document.getElementById('categorySelectTrigger');
+      if (catTrigger) catTrigger.textContent = formCategoryValue;
+      
       const stObj = statuses.find(s => s.key === formStatusKey);
       const stLabel = stObj ? stObj.label : '今使ってる';
-      document.getElementById('statusSelectTrigger').textContent = stLabel;
-      document.getElementById('favCategoryTrigger').textContent = formFavCategory;
+      const stTrigger = document.getElementById('statusSelectTrigger');
+      if (stTrigger) stTrigger.textContent = stLabel;
+
+      const favTrigger = document.getElementById('favCategoryTrigger');
+      if (favTrigger) favTrigger.textContent = formFavCategory;
     }
 
     function handleTagInput(e) {
@@ -920,26 +930,30 @@
       }
     }
 
-    document.getElementById('tagInput').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const val = this.value.trim().replace(/^#/, '');
-        if (val && !formTags.includes(val)) {
-          formTags.push(val);
-          if (!allTags.includes(val)) allTags.push(val);
-          this.value = '';
-          renderSelectedTags();
+    const tagInputEl = document.getElementById('tagInput');
+    if (tagInputEl) {
+      tagInputEl.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const val = this.value.trim().replace(/^#/, '');
+          if (val && !formTags.includes(val)) {
+            formTags.push(val);
+            if (!allTags.includes(val)) allTags.push(val);
+            this.value = '';
+            renderSelectedTags();
+          }
         }
-      }
-    });
+      });
+    }
 
-    function removeFormTag(idx) {
+    window.removeFormTag = function(idx) {
       formTags.splice(idx, 1);
       renderSelectedTags();
     }
 
     function renderSelectedTags() {
       const box = document.getElementById('selectedTagsBox');
+      if (!box) return;
       box.innerHTML = '';
       formTags.forEach((t, idx) => {
         const chip = document.createElement('div');
@@ -951,6 +965,7 @@
 
     function updateTagDatalist() {
       const dl = document.getElementById('tagList');
+      if (!dl) return;
       dl.innerHTML = '';
       allTags.forEach(t => {
         if (!formTags.includes(t)) {
@@ -977,11 +992,11 @@
       return { status: 'normal', text: '' };
     }
 
-    function openSideMenu() { document.getElementById('sideMenuOverlay').style.display = 'flex'; }
-    function closeSideMenu(e) { if (e.target.id === 'sideMenuOverlay') closeSideMenuDirect(); }
-    function closeSideMenuDirect() { document.getElementById('sideMenuOverlay').style.display = 'none'; }
+    window.openSideMenu = function() { document.getElementById('sideMenuOverlay').style.display = 'flex'; }
+    window.closeSideMenu = function(e) { if (e.target.id === 'sideMenuOverlay') closeSideMenuDirect(); }
+    window.closeSideMenuDirect = function() { document.getElementById('sideMenuOverlay').style.display = 'none'; }
 
-    function showRoutineView() {
+    window.showRoutineView = function() {
       document.getElementById('mainView').style.display = 'none';
       document.getElementById('routineView').style.display = 'block';
       const todayStr = new Date().toISOString().split('T')[0];
@@ -989,11 +1004,11 @@
       document.getElementById('favEndDate').value = todayStr;
       renderRoutineHistory();
     }
-    function showMainView() {
+    window.showMainView = function() {
       document.getElementById('routineView').style.display = 'none';
       document.getElementById('mainView').style.display = 'block';
     }
-    function showExpireTab() {
+    window.showExpireTab = function() {
       showMainView();
       switchTab('expire');
     }
@@ -1031,9 +1046,11 @@
             currentImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
             const preview = document.getElementById('imagePreview');
             const placeholder = document.getElementById('uploadPlaceholder');
-            preview.src = currentImageBase64;
-            preview.style.display = 'block';
-            placeholder.style.display = 'none';
+            if (preview && placeholder) {
+              preview.src = currentImageBase64;
+              preview.style.display = 'block';
+              placeholder.style.display = 'none';
+            }
           };
           img.src = e.target.result;
         };
@@ -1043,25 +1060,30 @@
 
     function resetImagePicker() {
       currentImageBase64 = '';
-      document.getElementById('imageInput').value = '';
-      document.getElementById('imagePreview').style.display = 'none';
-      document.getElementById('uploadPlaceholder').style.display = 'block';
+      const imgInput = document.getElementById('imageInput');
+      const preview = document.getElementById('imagePreview');
+      const placeholder = document.getElementById('uploadPlaceholder');
+      if (imgInput) imgInput.value = '';
+      if (preview) preview.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'block';
     }
 
-    function openCenterModal(type) {
+    window.openCenterModal = function(type) {
       currentModalType = type;
       let titleText = '選択してください';
       if (type === 'category') titleText = 'カテゴリーの選択・並べ替え';
       else if (type === 'status') titleText = '状態の選択・並べ替え';
       else if (type === 'favCategory') titleText = 'favorite log カテゴリーの管理';
 
-      document.getElementById('centerModalTitle').textContent = titleText;
+      const titleEl = document.getElementById('centerModalTitle');
+      if (titleEl) titleEl.textContent = titleText;
       renderCenterModalList();
       document.getElementById('centerModalOverlay').style.display = 'flex';
     }
 
     function renderCenterModalList() {
       const listContainer = document.getElementById('centerModalList');
+      if (!listContainer) return;
       listContainer.innerHTML = '';
       
       let targetList = categories;
@@ -1087,6 +1109,7 @@
 
     function setupDragAndDropHandle(handle, item, index) {
       const listContainer = document.getElementById('centerModalList');
+      if (!listContainer || !handle) return;
       
       handle.addEventListener('dragstart', (e) => {
         item.classList.add('dragging');
@@ -1132,6 +1155,7 @@
 
     function updateArrayOrderFromDOM() {
       const listContainer = document.getElementById('centerModalList');
+      if (!listContainer) return;
       const newArr = [];
       listContainer.querySelectorAll('.sort-list-item span:nth-child(2)').forEach(el => {
         newArr.push(el.textContent.trim());
@@ -1161,6 +1185,7 @@
 
     window.addItemToCenterModal = function() {
       const input = document.getElementById('centerModalAddInput');
+      if (!input) return;
       const val = input.value.trim();
       if (!val) return;
 
@@ -1213,10 +1238,12 @@
       });
 
       const formCard = document.getElementById('formCardSection');
-      if (tab === 'expire') {
-        formCard.style.display = 'none';
-      } else {
-        formCard.style.display = 'block';
+      if (formCard) {
+        if (tab === 'expire') {
+          formCard.style.display = 'none';
+        } else {
+          formCard.style.display = 'block';
+        }
       }
 
       render();
@@ -1227,15 +1254,22 @@
     function normalizeStr(str) { return (str || '').replace(/\s+/g, '').toLowerCase(); }
 
     window.addItem = function() {
-      const name = document.getElementById('name').value.trim();
+      const nameEl = document.getElementById('name');
+      if (!nameEl) return;
+      const name = nameEl.value.trim();
       if (!name) { alert('商品名を入力してください'); return; }
-      const brandInput = document.getElementById('brand').value.trim();
+
+      const brandEl = document.getElementById('brand');
+      const brandInput = brandEl ? brandEl.value.trim() : '';
       const category = formCategoryValue;
       const status = formStatusKey;
       
-      const priceVal = document.getElementById('priceInput').value.trim();
+      const priceEl = document.getElementById('priceInput');
+      const priceVal = priceEl ? priceEl.value.trim() : '';
       const price = priceVal ? parseInt(priceVal) || 0 : 0;
-      const expireDateVal = document.getElementById('expireDate').value;
+      
+      const expireEl = document.getElementById('expireDate');
+      const expireDateVal = expireEl ? expireEl.value : '';
 
       let finalExpireDate = '';
       let finalStockExpireDate = '';
@@ -1250,7 +1284,8 @@
         finalStockExpireDate = expireDateVal;
       }
 
-      const notes = document.getElementById('notes').value.trim();
+      const notesEl = document.getElementById('notes');
+      const notes = notesEl ? notesEl.value.trim() : '';
       const tags = [...formTags];
 
       const normName = normalizeStr(name);
@@ -1304,22 +1339,23 @@
       renderSelectedTags();
       updateTagDatalist();
 
-      document.getElementById('name').value = '';
-      document.getElementById('brand').value = '';
-      document.getElementById('priceInput').value = '';
-      document.getElementById('expireDate').value = '';
-      document.getElementById('notes').value = '';
-      document.getElementById('tagInput').value = '';
+      nameEl.value = '';
+      if (brandEl) brandEl.value = '';
+      if (priceEl) priceEl.value = '';
+      if (expireEl) expireEl.value = '';
+      if (notesEl) notesEl.value = '';
+      const tagIn = document.getElementById('tagInput');
+      if (tagIn) tagIn.value = '';
       resetImagePicker();
 
       render();
-      alert('コスメを登録しました！✨');
     }
 
     window.openFinishRatingModal = function(id) {
       activeFinishItemId = id;
       setRating(5);
-      document.getElementById('finishReviewInput').value = '';
+      const revEl = document.getElementById('finishReviewInput');
+      if (revEl) revEl.value = '';
       document.getElementById('ratingModalOverlay').style.display = 'flex';
     }
     window.setRating = function(val) {
@@ -1334,7 +1370,8 @@
         item.finishedCount = (item.finishedCount || 0) + 1;
         if (!item.ratings) item.ratings = [];
         item.ratings.push(currentSelectedRating);
-        const rev = document.getElementById('finishReviewInput').value.trim();
+        const revEl = document.getElementById('finishReviewInput');
+        const rev = revEl ? revEl.value.trim() : '';
         if (rev) item.notes = (item.notes ? item.notes + '\n' : '') + `【使い切り感想】★${currentSelectedRating}: ${rev}`;
       }
       saveData();
@@ -1386,7 +1423,8 @@
       });
 
       let displayItems = tabItems;
-      const searchKeyword = normalizeStr(document.getElementById('searchInput').value);
+      const searchInputEl = document.getElementById('searchInput');
+      const searchKeyword = searchInputEl ? normalizeStr(searchInputEl.value) : '';
 
       if (searchKeyword) {
         const cleanKeyword = searchKeyword.replace(/^#/, '');
@@ -1405,6 +1443,7 @@
       }
 
       const list = document.getElementById('itemList');
+      if (!list) return;
       list.innerHTML = '';
 
       if (displayItems.length === 0) {
@@ -1487,6 +1526,7 @@
       });
 
       const summaryGrid = document.getElementById('summaryGrid');
+      if (!summaryGrid) return;
       summaryGrid.innerHTML = '';
 
       const allBadge = document.createElement('div');
@@ -1677,6 +1717,7 @@
 
     window.addEditTag = function(id) {
       const input = document.getElementById(`editTagInput_${id}`);
+      if (!input) return;
       const val = input.value.trim().replace(/^#/, '');
       if (val && !editingItemTags.includes(val)) {
         editingItemTags.push(val);
@@ -1700,15 +1741,21 @@
       const item = items.find(i => i.id === id);
       if (!item) return;
 
-      const name = document.getElementById(`editName_${id}`).value.trim();
+      const nameEl = document.getElementById(`editName_${id}`);
+      const name = nameEl ? nameEl.value.trim() : '';
       if (!name) { alert('商品名を入力してください'); return; }
 
-      item.brand = document.getElementById(`editBrand_${id}`).value.trim();
+      const brandEl = document.getElementById(`editBrand_${id}`);
+      const catEl = document.getElementById(`editCategory_${id}`);
+      const priceEl = document.getElementById(`editPrice_${id}`);
+      const notesEl = document.getElementById(`editNotes_${id}`);
+
+      item.brand = brandEl ? brandEl.value.trim() : '';
       item.name = name;
-      item.category = document.getElementById(`editCategory_${id}`).value;
-      const editPriceVal = document.getElementById(`editPrice_${id}`).value.trim();
+      item.category = catEl ? catEl.value : categories[0];
+      const editPriceVal = priceEl ? priceEl.value.trim() : '';
       item.price = editPriceVal ? parseInt(editPriceVal) || 0 : 0;
-      item.notes = document.getElementById(`editNotes_${id}`).value.trim();
+      item.notes = notesEl ? notesEl.value.trim() : '';
       item.tags = [...editingItemTags];
 
       item.tags.forEach(t => { if (!allTags.includes(t)) allTags.push(t); });
@@ -1717,7 +1764,6 @@
       updateTagDatalist();
       openModal(id);
       render();
-      alert('商品情報を更新しました！✨');
     }
 
     window.updateModalImage = function(e, id) {
@@ -1769,6 +1815,7 @@
     window.promptDeleteItem = function(id) {
       const dialog = document.getElementById('dialogOverlay');
       const confirmBtn = document.getElementById('dialogConfirmBtn');
+      if (!dialog || !confirmBtn) return;
       dialog.style.display = 'flex';
       confirmBtn.onclick = () => {
         items = items.filter(i => i.id !== id);
