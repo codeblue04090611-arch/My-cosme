@@ -162,7 +162,7 @@
     .form-group.full { grid-column: span 2; }
     label { font-size: 0.72rem; font-weight: bold; color: var(--text-sub); }
     
-    input, textarea, select, .select-picker-trigger, .date-input-wrapper input[type="date"] {
+    input, textarea, select, .date-input-wrapper input[type="date"] {
       height: 46px;
       padding: 0 12px;
       border: 1.5px solid var(--border);
@@ -174,23 +174,23 @@
       width: 100%;
       transition: border-color 0.2s;
       box-sizing: border-box;
+    }
+    
+    .select-picker-trigger {
+      height: 46px;
+      padding: 0 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      font-size: 14.5px;
+      background: #fffcfd;
+      color: var(--text-main);
+      width: 100%;
+      box-sizing: border-box;
       display: flex;
       align-items: center;
-    }
-    input:focus, textarea:focus, select:focus, .select-picker-trigger:focus { border-color: var(--primary); }
-    textarea { height: 60px; resize: none; padding-top: 10px; }
-
-    .select-picker-trigger {
       justify-content: space-between;
       cursor: pointer;
       user-select: none;
-      position: relative;
-      z-index: 5;
-    }
-    .select-picker-trigger span {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
     .select-picker-trigger::after {
       content: "▼";
@@ -199,6 +199,9 @@
       flex-shrink: 0;
       margin-left: 4px;
     }
+
+    input:focus, textarea:focus, select:focus, .select-picker-trigger:focus { border-color: var(--primary); }
+    textarea { height: 60px; resize: none; padding-top: 10px; }
 
     .date-input-wrapper {
       position: relative;
