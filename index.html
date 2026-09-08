@@ -164,10 +164,10 @@
     
     input, textarea, select, .select-picker-trigger, .date-input-wrapper input[type="date"] {
       height: 46px;
-      padding: 0 14px;
+      padding: 0 10px;
       border: 1.5px solid var(--border);
       border-radius: 14px;
-      font-size: 16px;
+      font-size: 14.5px;
       outline: none;
       background: #fffcfd;
       color: var(--text-main);
@@ -176,6 +176,9 @@
       box-sizing: border-box;
       display: flex;
       align-items: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     input:focus, textarea:focus, select:focus, .select-picker-trigger:focus { border-color: var(--primary); }
     textarea { height: 60px; resize: none; padding-top: 10px; }
@@ -187,8 +190,10 @@
     }
     .select-picker-trigger::after {
       content: "▼";
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: var(--text-sub);
+      flex-shrink: 0;
+      margin-left: 4px;
     }
 
     .date-input-wrapper {
@@ -835,7 +840,6 @@
       try {
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) {
-          // 初回ログイン時、ローカルストレージにデータがあればそれをクラウドに引き継ぐ
           const localItems = JSON.parse(localStorage.getItem('mycosme_items') || '[]');
           const localCats = JSON.parse(localStorage.getItem('mycosme_categories') || JSON.stringify(categories));
           const localStatuses = JSON.parse(localStorage.getItem('mycosme_statuses') || JSON.stringify(statuses));
@@ -854,7 +858,6 @@
         console.error("Migration error:", e);
       }
 
-      // リアルタイムリスナーの開始
       unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -914,7 +917,6 @@
       await signOut(auth);
     };
 
-    // アプリのロジック部分
     let categories = ["ファンデーション", "下地", "日焼け止め", "アイメイク", "チーク", "リップ", "スキンケア", "クレンジング", "その他"];
     let statuses = [
       { key: "using", label: "今使ってる" },
