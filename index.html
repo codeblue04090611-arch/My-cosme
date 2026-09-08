@@ -712,6 +712,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
     apiKey: "AIzaSyBA1KN4SpBCXkr1xAmkTLDjgJT6T9-7ZqE",
@@ -724,11 +725,13 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     const loginScreen = document.getElementById('loginScreen');
     const appRootContainer = document.getElementById('appRootContainer');
 
     let isRegisterMode = false;
+    let unsubscribeFirestore = null;
 
     function showAuthError(msg) {
       const errBox = document.getElementById('authErrorMsg');
@@ -814,16 +817,79 @@
       }
     };
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         loginScreen.style.display = 'none';
         appRootContainer.style.display = 'block';
-        initApp();
+        await initCloudSync(user.uid);
       } else {
+        if (unsubscribeFirestore) unsubscribeFirestore();
         loginScreen.style.display = 'flex';
         appRootContainer.style.display = 'none';
       }
     });
+
+    async function initCloudSync(uid) {
+      const docRef = doc(db, "users", uid);
+      
+      try {
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+          // 初回ログイン時、ローカルストレージにデータがあればそれをクラウドに引き継ぐ
+          const localItems = JSON.parse(localStorage.getItem('mycosme_items') || '[]');
+          const localCats = JSON.parse(localStorage.getItem('mycosme_categories') || JSON.stringify(categories));
+          const localStatuses = JSON.parse(localStorage.getItem('mycosme_statuses') || JSON.stringify(statuses));
+          const localTags = JSON.parse(localStorage.getItem('mycosme_all_tags') || '[]');
+          const localRoutines = JSON.parse(localStorage.getItem('mycosme_routines') || '[]');
+
+          await setDoc(docRef, {
+            items: localItems,
+            categories: localCats,
+            statuses: localStatuses,
+            allTags: localTags,
+            routines: localRoutines
+          });
+        }
+      } catch (e) {
+        console.error("Migration error:", e);
+      }
+
+      // リアルタイムリスナーの開始
+      unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.items) items = data.items;
+          if (data.categories) categories = data.categories;
+          if (data.statuses) statuses = data.statuses;
+          if (data.allTags) allTags = data.allTags;
+          if (data.routines) routines = data.routines;
+
+          if (categories.length > 0 && !categories.includes(formCategoryValue)) formCategoryValue = categories[0];
+          if (!statuses.some(s => s.key === formStatusKey) && statuses.length > 0) formStatusKey = statuses[0].key;
+
+          updateFormTriggers();
+          updateTagDatalist();
+          render();
+        }
+      });
+    }
+
+    window.saveDataCloud = async function() {
+      const user = auth.currentUser;
+      if (!user) return;
+      const docRef = doc(db, "users", user.uid);
+      try {
+        await setDoc(docRef, {
+          items: items,
+          categories: categories,
+          statuses: statuses,
+          allTags: allTags,
+          routines: routines
+        }, { merge: true });
+      } catch (e) {
+        console.error("Save error:", e);
+      }
+    };
 
     window.openSettingsModal = function() {
       document.getElementById('settingsModalOverlay').style.display = 'flex';
@@ -847,9 +913,8 @@
       closeLogoutDialog();
       await signOut(auth);
     };
-  </script>
 
-  <script>
+    // アプリのロジック部分
     let categories = ["ファンデーション", "下地", "日焼け止め", "アイメイク", "チーク", "リップ", "スキンケア", "クレンジング", "その他"];
     let statuses = [
       { key: "using", label: "今使ってる" },
@@ -864,7 +929,6 @@
     let allTags = []; 
     let formTags = []; 
     let routines = []; 
-    let currentFavItems = [];
 
     let currentTab = 'home';
     let selectedCategoryFilter = null;
@@ -876,41 +940,6 @@
     let formCategoryValue = "ファンデーション";
     let formStatusKey = "using";
     let currentModalType = '';
-
-    function initApp() {
-      try {
-        if (localStorage.getItem('mycosme_categories')) {
-          categories = JSON.parse(localStorage.getItem('mycosme_categories'));
-        }
-        if (localStorage.getItem('mycosme_statuses')) statuses = JSON.parse(localStorage.getItem('mycosme_statuses'));
-        if (localStorage.getItem('mycosme_fav_categories')) favCategories = JSON.parse(localStorage.getItem('mycosme_fav_categories'));
-        if (localStorage.getItem('mycosme_items')) items = JSON.parse(localStorage.getItem('mycosme_items'));
-        if (!Array.isArray(items)) items = [];
-        if (localStorage.getItem('mycosme_all_tags')) allTags = JSON.parse(localStorage.getItem('mycosme_all_tags'));
-        if (!Array.isArray(allTags)) allTags = [];
-        if (localStorage.getItem('mycosme_routines')) routines = JSON.parse(localStorage.getItem('mycosme_routines'));
-        if (!Array.isArray(routines)) routines = [];
-      } catch (e) {
-        items = [];
-      }
-
-      if (categories.length > 0 && !categories.includes(formCategoryValue)) formCategoryValue = categories[0];
-      if (!statuses.some(s => s.key === formStatusKey) && statuses.length > 0) formStatusKey = statuses[0].key;
-      if (favCategories.length > 0) formFavCategory = favCategories[0];
-
-      updateFormTriggers();
-      updateTagDatalist();
-      render();
-    }
-
-    function saveData() {
-      localStorage.setItem('mycosme_items', JSON.stringify(items));
-      localStorage.setItem('mycosme_categories', JSON.stringify(categories));
-      localStorage.setItem('mycosme_statuses', JSON.stringify(statuses));
-      localStorage.setItem('mycosme_fav_categories', JSON.stringify(favCategories));
-      localStorage.setItem('mycosme_all_tags', JSON.stringify(allTags));
-      localStorage.setItem('mycosme_routines', JSON.stringify(routines));
-    }
 
     function updateFormTriggers() {
       const catTrigger = document.getElementById('categorySelectTrigger');
@@ -1008,7 +1037,6 @@
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('favStartDate').value = todayStr;
       document.getElementById('favEndDate').value = todayStr;
-      renderRoutineHistory();
     }
     window.showMainView = function() {
       document.getElementById('routineView').style.display = 'none';
@@ -1178,7 +1206,7 @@
           return found || { key: 'custom_' + Math.random(), label };
         });
       } else if (currentModalType === 'favCategory') favCategories = newArr;
-      saveData();
+      saveDataCloud();
       render();
     }
 
@@ -1211,7 +1239,7 @@
         if (!favCategories.includes(val)) { favCategories.push(val); formFavCategory = val; }
       }
 
-      saveData();
+      saveDataCloud();
       input.value = '';
       updateFormTriggers();
       renderCenterModalList();
@@ -1229,7 +1257,7 @@
         if (favCategories.length <= 1) return;
         favCategories.splice(index, 1); formFavCategory = favCategories[0];
       }
-      saveData();
+      saveDataCloud();
       updateFormTriggers();
       renderCenterModalList();
       render();
@@ -1343,7 +1371,7 @@
         });
       }
 
-      saveData();
+      saveDataCloud();
       formTags = [];
       renderSelectedTags();
       updateTagDatalist();
@@ -1383,7 +1411,7 @@
         const rev = revEl ? revEl.value.trim() : '';
         if (rev) item.notes = (item.notes ? item.notes + '\n' : '') + `【使い切り感想】★${currentSelectedRating}: ${rev}`;
       }
-      saveData();
+      saveDataCloud();
       document.getElementById('ratingModalOverlay').style.display = 'none';
       closeModalDirect();
       render();
@@ -1399,7 +1427,7 @@
       } else if (field === 'finished') {
         item.finishedCount = Math.max(0, (item.finishedCount || 0) + delta);
       }
-      saveData();
+      saveDataCloud();
       openModal(id);
       render();
     }
@@ -1409,13 +1437,12 @@
       if (!item) return;
       if (flagKey === 'buy') item.isBuy = !item.isBuy;
       if (flagKey === 'wishlist') item.isWishlist = !item.isWishlist;
-      saveData();
+      saveDataCloud();
       openModal(id);
       render();
     }
 
     function render() {
-      // 1. タブごとの基本絞り込み
       let tabItems = items.filter(i => {
         if (currentTab === 'home') return true;
         if (currentTab === 'using') return (i.usingCount || 0) > 0;
@@ -1431,13 +1458,11 @@
         return false;
       });
 
-      // 2. カテゴリーバッジでの絞り込み
       let displayItems = tabItems;
       if (selectedCategoryFilter) {
         displayItems = tabItems.filter(i => i.category === selectedCategoryFilter);
       }
 
-      // 3. 検索キーワードでの絞り込み（ここで完全に合致するものだけにフィルタリング）
       const searchInputEl = document.getElementById('searchInput');
       const searchKeyword = searchInputEl ? normalizeStr(searchInputEl.value) : '';
 
@@ -1773,7 +1798,7 @@
 
       item.tags.forEach(t => { if (!allTags.includes(t)) allTags.push(t); });
 
-      saveData();
+      saveDataCloud();
       updateTagDatalist();
       openModal(id);
       render();
@@ -1811,7 +1836,7 @@
 
             const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
             const item = items.find(i => i.id === id);
-            if (item) { item.img = compressedBase64; saveData(); openModal(id); render(); }
+            if (item) { item.img = compressedBase64; saveDataCloud(); openModal(id); render(); }
           };
           img.src = evt.target.result;
         };
@@ -1820,7 +1845,7 @@
     }
     window.removeModalImage = function(id) {
       const item = items.find(i => i.id === id);
-      if (item) { item.img = ''; saveData(); openModal(id); render(); }
+      if (item) { item.img = ''; saveDataCloud(); openModal(id); render(); }
     }
     window.closeModalDirect = function() { document.getElementById('modalOverlay').style.display = 'none'; }
     window.closeModal = function(e) { if (e.target.id === 'modalOverlay') closeModalDirect(); }
@@ -1832,7 +1857,7 @@
       dialog.style.display = 'flex';
       confirmBtn.onclick = () => {
         items = items.filter(i => i.id !== id);
-        saveData();
+        saveDataCloud();
         closeDialog();
         closeModalDirect();
         render();
