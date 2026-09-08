@@ -597,10 +597,8 @@
             <label>商品を追加</label>
             <div style="display:flex; gap:6px; margin-bottom:6px;">
               <input type="text" id="favBrandInput" placeholder="ブランド名" style="flex:0.8;">
-              
               <input type="text" id="favProductInput" list="favProductList" placeholder="商品名を入力" style="flex:1.2;">
               <datalist id="favProductList"></datalist>
-
               <button style="background:var(--accent); color:white; border:none; padding:0 14px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="addFavItemToList()">追加</button>
             </div>
             <div class="selected-tags-box" id="favSelectedItemsBox" style="margin-top:8px;"></div>
@@ -870,7 +868,6 @@
 
     let currentTab = 'home';
     let selectedCategoryFilter = null;
-    let selectedTagFilter = null;
     let items = [];
     let currentImageBase64 = '';
     let activeFinishItemId = null;
@@ -1244,7 +1241,6 @@
     window.switchTab = function(tab) {
       currentTab = tab;
       selectedCategoryFilter = null;
-      selectedTagFilter = null;
       ['home', 'using', 'stock', 'buy', 'wishlist', 'finished', 'expire'].forEach(t => {
         const el = document.getElementById(`nav-${t}`);
         if (el) el.classList.toggle('active', t === tab);
@@ -1419,10 +1415,9 @@
     }
 
     function render() {
-      renderSummary();
-
+      // 1. タブごとの基本絞り込み
       let tabItems = items.filter(i => {
-        if (currentTab === 'home') return true; // HOMEなら全てのコスメを表示
+        if (currentTab === 'home') return true;
         if (currentTab === 'using') return (i.usingCount || 0) > 0;
         if (currentTab === 'stock') return (i.stockCount || 0) > 0;
         if (currentTab === 'finished') return (i.finishedCount || 0) > 0;
@@ -1436,13 +1431,19 @@
         return false;
       });
 
+      // 2. カテゴリーバッジでの絞り込み
       let displayItems = tabItems;
+      if (selectedCategoryFilter) {
+        displayItems = tabItems.filter(i => i.category === selectedCategoryFilter);
+      }
+
+      // 3. 検索キーワードでの絞り込み（ここで完全に合致するものだけにフィルタリング）
       const searchInputEl = document.getElementById('searchInput');
       const searchKeyword = searchInputEl ? normalizeStr(searchInputEl.value) : '';
 
       if (searchKeyword) {
         const cleanKeyword = searchKeyword.replace(/^#/, '');
-        displayItems = tabItems.filter(i => {
+        displayItems = displayItems.filter(i => {
           const matchText = normalizeStr(i.name).includes(searchKeyword) || 
                             normalizeStr(i.brand).includes(searchKeyword) || 
                             normalizeStr(i.category).includes(searchKeyword) ||
@@ -1452,9 +1453,9 @@
 
           return matchText || matchTag;
         });
-      } else if (selectedCategoryFilter) {
-        displayItems = tabItems.filter(i => i.category === selectedCategoryFilter);
       }
+
+      renderSummary();
 
       const list = document.getElementById('itemList');
       if (!list) return;
@@ -1462,11 +1463,13 @@
 
       if (displayItems.length === 0) {
         let msg = '該当するコスメがありません';
-        if (currentTab === 'home') msg = 'まだ登録されているコスメがありません✨';
-        if (currentTab === 'expire') msg = '一ヶ月以内に期限が切れるコスメはありません✨';
-        if (currentTab === 'buy') msg = '買うものリストに追加されたコスメはありません🛒';
-        if (currentTab === 'wishlist') msg = '欲しいものリストに追加されたコスメはありません🪄';
-        if (currentTab === 'finished') msg = '使い切ったコスメはありません🎀';
+        if (searchKeyword) msg = '検索条件に一致するコスメがありません🔍';
+        else if (currentTab === 'home') msg = 'まだ登録されているコスメがありません✨';
+        else if (currentTab === 'expire') msg = '一ヶ月以内に期限が切れるコスメはありません✨';
+        else if (currentTab === 'buy') msg = '買うものリストに追加されたコスメはありません🛒';
+        else if (currentTab === 'wishlist') msg = '欲しいものリストに追加されたコスメはありません🪄';
+        else if (currentTab === 'finished') msg = '使い切ったコスメはありません🎀';
+        
         list.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--text-sub); padding:40px 0; font-size:0.85rem;">${msg}</div>`;
         return;
       }
