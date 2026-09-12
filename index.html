@@ -1142,9 +1142,9 @@
         const item = document.createElement('div');
         item.className = 'sort-list-item';
         item.innerHTML = `
-          <div style="display:flex; align-items:center; flex:1;" onclick="selectCenterItem('${labelText}')">
-            <span class="drag-handle" draggable="true">☰</span>
-            <span style="font-weight:bold; font-size:0.85rem;">${labelText}</span>
+          <div style="display:flex; align-items:center; flex:1; cursor:pointer;" onclick="selectCenterItem('${labelText}')">
+            <span class="drag-handle" draggable="true" onclick="event.stopPropagation()">☰</span>
+            <span style="font-weight:bold; font-size:0.85rem; margin-left:6px;">${labelText}</span>
           </div>
           ${targetList.length > 1 ? `<button onclick="event.stopPropagation(); deleteCenterItem(${index})" style="background:none; border:none; cursor:pointer; color:#e11d48; font-size:0.75rem; font-weight:bold; padding:4px;">削除</button>` : ''}
         `;
@@ -1219,7 +1219,7 @@
       render();
     }
 
-    function selectCenterItem(val) {
+    window.selectCenterItem = function(val) {
       if (currentModalType === 'category') formCategoryValue = val;
       else if (currentModalType === 'status') {
         const found = statuses.find(s => s.label === val);
@@ -1255,7 +1255,7 @@
       render();
     }
 
-    function deleteCenterItem(index) {
+    window.deleteCenterItem = function(index) {
       if (currentModalType === 'category') {
         if (categories.length <= 1) return;
         categories.splice(index, 1); formCategoryValue = categories[0];
